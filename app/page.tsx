@@ -1,95 +1,112 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+// app/page.tsx
+import React from "react";
+import NotFound from "./not-found";
+import { debounce, GlobalStyles, ThemeProvider } from "@mui/material";
+import { theme } from "./theme/index";
+import MainPage from "./sections/home";
+import { Provider } from "react-redux";
+import { persistor, store } from "./redux/store/index";
+import { PersistGate } from "redux-persist/integration/react";
+import { Toaster } from "react-hot-toast";
+import zIndex from "@mui/material/styles/zIndex";
+import Loader from "./component/loader";
+// Function to extract the first subdomain from the hostname
+const getFirstSubdomain = (hostname: string): string | null => {
+  // If the hostname is "localhost" or an IP address, return null
+  // if (
+  //   hostname === "localhost" ||
+  //   hostname === "127.0.0.1" ||
+  //   /^(?:\d{1,3}\.){3}\d{1,3}$/.test(hostname) // Matches IP format
+  // ) {
+  //   return null;
+  // }
 
-export default function Home() {
+  // Split the hostname into parts based on the dots
+  const parts = hostname.split(".");
+
+  console.log(parts);
+  // If there are more than two parts, it indicates a subdomain
+  // Example: 'subdomain.example.com' -> ['subdomain', 'example', 'com']
+  if (parts.length > 1) {
+    return parts[0]; // The first part is the subdomain
+  }
+
+  // If no subdomain found, return null
+  return null;
+};
+
+// Using a server component to fetch subdomain from the headers
+export default function HomePage() {
+  const [loading, setLoading] = React.useState(true);
+  const [domain, setSubdomain] = React.useState<string | null | undefined>();
+  // Check if we are in the client (for local environment fallback)
+  const host =
+    typeof window !== "undefined" && window.location.hostname
+      ? window.location.hostname
+      : "localhost";
+
+  React.useEffect(() => {
+    setLoading(true);
+    if (typeof window !== "undefined" && window) {
+      const resizeOps = (): void => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty("--vh", `${vh}px`);
+      };
+
+      resizeOps();
+      window.addEventListener("resize", resizeOps);
+    }
+    debounce(() => {
+      setSubdomain(getFirstSubdomain(host) ?? null);
+      setLoading(false);
+    }, 600)();
+  }, [host]);
+
+  // Extract the first subdomain
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <ThemeProvider theme={theme}>
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <GlobalStyles
+            styles={{
+              "& *.scrollbar::-webkit-scrollbar": {
+                width: "8px", // Scrollbar width
+                height: "8px",
+              },
+              "& *.scrollbar::-webkit-scrollbar-track": {
+                backgroundColor: "#d1d1d1", // Scrollbar track color
+                borderRadius: "20px", // Optional: rounded corners for the track
+              },
+              "& *.scrollbar::-webkit-scrollbar-thumb": {
+                backgroundColor: "#6d6d6d", // Scrollbar thumb color
+                borderRadius: "10px", // Rounded corners for the thumb
+                border: "2px solid #e0e0e0", // Optional: creates padding-like effect
+              },
+              "& *.scrollbar::-webkit-scrollbar-thumb:hover": {
+                backgroundColor: "#0056b3", // Color on hover
+              },
+            }}
+          />
+          <Toaster
+            containerStyle={{ zIndex: zIndex.modal * 10 }}
+            toastOptions={{
+              style: {
+                // position: "fixed",
+                zIndex: zIndex.modal * 10,
+              },
+            }}
+          />
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          {loading && typeof domain === "undefined" ? (
+            <Loader />
+          ) : domain ? (
+            <MainPage domain={domain} />
+          ) : (
+            !loading && !domain && <NotFound />
+          )}
+        </PersistGate>
+      </Provider>
+    </ThemeProvider>
   );
 }
