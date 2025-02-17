@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import Razorpay from "razorpay";
 import { decryptData } from "@/app/utils/crypto";
 
@@ -13,12 +13,12 @@ type CenterUserPricing = {
 
 // Utility function to create a Razorpay instance
 const createRazorpayInstance = () => {
-  if (!process.env.RAZORYPAY_KEY || !process.env.RAZORYPAY_SECRET) {
+  if (!process.env.RAZORPAY_KEY || !process.env.RAZORPAY_SECRET) {
     throw new Error("Razorpay environment variables are not set");
   }
   return new Razorpay({
-    key_id: process.env.RAZORYPAY_KEY,
-    key_secret: process.env.RAZORYPAY_SECRET,
+    key_id: process.env.RAZORPAY_KEY,
+    key_secret: process.env.RAZORPAY_SECRET,
   });
 };
 
@@ -31,12 +31,12 @@ export const GET = async () => {
 };
 
 // POST Handler
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     // Parse the request body
     const body = await req.json();
     const { data, type } = body;
-
+    console.log(data, type);
     // Check for missing fields
     if (!data || !type) {
       return NextResponse.json(
@@ -81,12 +81,12 @@ export async function POST(req: Request) {
       { message: "Created Order Successfully", order },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in payment handler:", error);
     return NextResponse.json(
       {
         message: "Internal Server Error",
-        error: error.message || "Unknown error",
+        error: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );
