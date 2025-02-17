@@ -1,12 +1,11 @@
 "use client";
 import { Button, styled } from "@mui/material";
 import Image from "next/image";
-import NotFoundPNG from "@/app/assets/not-found.png";
-import CustomTypography from "./component/typography";
+import NotFoundPNG from "@/assets/not-found.png";
+import CustomTypography from "../component/typography";
 
 function removeSubdomainsAndRedirect() {
   const { hostname, protocol, pathname, search, port } = window.location;
-
   // Split the hostname to check for subdomains
   const hostParts = hostname.split(".");
 
@@ -16,13 +15,16 @@ function removeSubdomainsAndRedirect() {
 
   if (!isLocalhost && hostParts.length > 2) {
     // For non-localhost, keep only the last two parts (e.g., "example.com")
-    const baseDomain = hostParts.slice(-2).join(".");
-    const redirectUrl = `${protocol}//${baseDomain}${pathname}${search}`;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, ...others] = hostname.split(".");
+
+    const redirectUrl = `${protocol}//${others}${pathname}${search}`;
     window.location.replace(redirectUrl);
   } else if (isLocalhost && hostParts.length > 1) {
     // For localhost or IP, keep only the "localhost" or IP part and include the port
-    const baseDomain = hostParts.slice(-1).join(".");
-    const redirectUrl = `${protocol}//${baseDomain}${
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, ...others] = hostname.split(".");
+    const redirectUrl = `${protocol}//${others.join(".")}${
       port ? `:${port}` : ""
     }${pathname}${search}`;
     window.location.replace(redirectUrl);

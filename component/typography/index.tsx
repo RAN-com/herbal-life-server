@@ -1,6 +1,6 @@
 import Typography, { TypographyProps } from "@mui/material/Typography";
-import useFluidTypography from "@/app/hooks/fluid-typo";
-import { capitalizeSentence } from "@/app/utils/functions";
+import useFluidTypography from "@/hooks/fluid-typo";
+import { capitalizeSentence } from "@/utils/functions";
 import React from "react";
 
 type Props = TypographyProps & {

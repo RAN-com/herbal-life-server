@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   collection,
   doc,
@@ -7,10 +8,10 @@ import {
   setDoc,
   deleteDoc,
 } from "firebase/firestore";
-import { firestore } from "./";
-import { StaffData } from "@/app/types/staff";
-import { errorToast, successToast } from "@/app/utils/toast";
-import { encryptData } from "@/app/utils/crypto";
+import { firestore } from ".";
+import { StaffData } from "@/types/staff";
+import { errorToast, successToast } from "@/utils/toast";
+import { encryptData } from "@/utils/crypto";
 
 export const getStaff = async (uid: string, sid: string) => {
   try {

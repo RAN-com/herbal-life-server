@@ -10,7 +10,7 @@ import { useAppSelector, useAppDispatch } from "../redux/store/hook";
 import PreviewScreen from "../component/preview";
 import moment from "moment";
 import { getCardDetail } from "../firebase/card";
-import NotFound from "../not-found";
+import NotFound from "../app/not-found";
 // Using a server component to fetch subdomain from the headers
 export default function MainPage({ domain }: { domain: string | null }) {
   const dispatch = useAppDispatch();
@@ -41,5 +41,6 @@ export default function MainPage({ domain }: { domain: string | null }) {
     }
   }, [existing_domain]);
 
+  console.log(domain);
   return card_details ? <PreviewScreen /> : <NotFound />;
 }

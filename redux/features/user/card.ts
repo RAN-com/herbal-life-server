@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getDomainData } from "@/app/firebase/domain";
-import { getStaff } from "@/app/firebase/staffs";
-import { CardData, DomainData } from "@/app/types/card";
+import { getDomainData } from "@/firebase/domain";
+import { getStaff } from "@/firebase/staffs";
+import { CardData, DomainData } from "@/types/card";
 
-import { StaffData } from "@/app/types/staff";
+import { StaffData } from "@/types/staff";
 
 type INITIAL_STATE = {
   staffs_loading: boolean;

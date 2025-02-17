@@ -3,41 +3,47 @@
 import React from "react";
 import NotFound from "./not-found";
 import { debounce, GlobalStyles, ThemeProvider } from "@mui/material";
-import { theme } from "./theme/index";
-import MainPage from "./sections/home";
+import { theme } from "../theme/index";
+import MainPage from "../sections/home";
 import { Provider } from "react-redux";
-import { persistor, store } from "./redux/store/index";
+import { persistor, store } from "../redux/store/index";
 import { PersistGate } from "redux-persist/integration/react";
 import { Toaster } from "react-hot-toast";
 import zIndex from "@mui/material/styles/zIndex";
-import Loader from "./component/loader";
-// Function to extract the first subdomain from the hostname
-const getFirstSubdomain = (hostname: string): string | null => {
-  // If the hostname is "localhost" or an IP address, return null
-  // if (
-  //   hostname === "localhost" ||
-  //   hostname === "127.0.0.1" ||
-  //   /^(?:\d{1,3}\.){3}\d{1,3}$/.test(hostname) // Matches IP format
-  // ) {
-  //   return null;
-  // }
-
-  // Split the hostname into parts based on the dots
-  const parts = hostname.split(".");
-
-  console.log(parts);
-  // If there are more than two parts, it indicates a subdomain
-  // Example: 'subdomain.example.com' -> ['subdomain', 'example', 'com']
-  if (parts.length > 1) {
-    return parts[0]; // The first part is the subdomain
-  }
-
-  // If no subdomain found, return null
-  return null;
-};
+import Loader from "../component/loader";
+import CustomTypography from "@/component/typography";
+import moment from "moment";
 
 // Using a server component to fetch subdomain from the headers
 export default function HomePage() {
+  // Function to extract the first subdomain from the hostname
+  const getFirstSubdomain = (hostname: string): string | null => {
+    if (!hostname.includes("herbal-life")) return null;
+    // If the hostname is "localhost" or an IP address, return null
+    // if (
+    //   hostname === "localhost" ||
+    //   hostname === "127.0.0.1" ||
+    //   /^(?:\d{1,3}\.){3}\d{1,3}$/.test(hostname) // Matches IP format
+    // ) {
+    //   return null;
+    // }
+
+    // Split the hostname into parts based on the dots
+    const parts = hostname.split(".herbal-life");
+
+    console.log(parts);
+    // If there are more than two parts, it indicates a subdomain
+    // Example: 'subdomain.example.com' -> ['subdomain', 'example', 'com']
+    if (parts.length > 1) {
+      return parts[0]; // The first part is the subdomain
+    }
+    if (parts.length === 1 && parts.join("").includes("herbal-life")) {
+      return "main";
+    }
+
+    // If no subdomain found, return null
+    return null;
+  };
   const [loading, setLoading] = React.useState(true);
   const [domain, setSubdomain] = React.useState<string | null | undefined>();
   // Check if we are in the client (for local environment fallback)
@@ -57,6 +63,7 @@ export default function HomePage() {
       resizeOps();
       window.addEventListener("resize", resizeOps);
     }
+
     debounce(() => {
       setSubdomain(getFirstSubdomain(host) ?? null);
       setLoading(false);
@@ -100,6 +107,10 @@ export default function HomePage() {
 
           {loading && typeof domain === "undefined" ? (
             <Loader />
+          ) : domain === "main" ? (
+            <CustomTypography>
+              Herbal Life {moment().format("YYYY")}. All Right Reserved
+            </CustomTypography>
           ) : domain ? (
             <MainPage domain={domain} />
           ) : (

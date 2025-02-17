@@ -1,8 +1,8 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { firestore } from ".";
-import { getStaff, updateStaff } from "./staffs";
-import { AppointmentData, StaffData } from "@/app/types/staff";
-import { errorToast } from "@/app/utils/toast";
+import { updateStaff } from "./staffs";
+import { AppointmentData, StaffData } from "@/types/staff";
+import { errorToast } from "@/utils/toast";
 
 export const checkSubdomain = async (uid: string, domain: string) => {
   const appRef = doc(firestore, `users/${uid}/appointments/${domain}`);

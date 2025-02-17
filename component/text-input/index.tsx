@@ -7,7 +7,7 @@ import {
   TextField,
   TextFieldProps,
 } from "@mui/material";
-import useFluidTypography from "@/app/hooks/fluid-typo";
+import useFluidTypography from "@/hooks/fluid-typo";
 import React from "react";
 import CustomTypography from "../typography";
 

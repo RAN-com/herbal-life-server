@@ -1,5 +1,5 @@
 import { styled } from "@mui/material";
-import { CardData } from "@/app/types/card";
+import { CardData } from "@/types/card";
 import CustomTypography from "../typography";
 import { grey } from "@mui/material/colors";
 

@@ -1,9 +1,9 @@
 import { Avatar, Button, Divider, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import CustomTypography from "@/app/component/typography";
-import useFluidTypography from "@/app/hooks/fluid-typo";
-import { useAppSelector } from "@/app/redux/store/hook";
-import { capitalizeSentence } from "@/app/utils/functions";
+import CustomTypography from "@/component/typography";
+import useFluidTypography from "@/hooks/fluid-typo";
+import { useAppSelector } from "@/redux/store/hook";
+import { capitalizeSentence } from "@/utils/functions";
 
 const HomePreview = () => {
   const data = useAppSelector((s) => s.card.card_data);

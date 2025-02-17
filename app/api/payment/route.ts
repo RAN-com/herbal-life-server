@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import Razorpay from "razorpay";
-import { decryptData } from "@/app/utils/crypto";
+import { decryptData } from "@/utils/crypto";
 
 type CenterUserPricing = {
   title: string;

@@ -1,7 +1,7 @@
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { firestore } from ".";
-import { CardCreateData, CardData } from "@/app/types/card";
-import { errorToast, successToast } from "@/app/utils/toast";
+import { CardCreateData, CardData } from "@/types/card";
+import { errorToast, successToast } from "@/utils/toast";
 import moment from "moment";
 
 export const getCardDetail = async (sid: string) => {
