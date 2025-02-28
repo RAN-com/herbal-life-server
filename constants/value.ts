@@ -12,7 +12,7 @@ export const SERVER_DOMAIN = isDev
 
 export const razorpay_key = isDev
   ? process.env.RAZORPAY_KEY
-  : process.env.RAZORPAY_SECRET_KEY;
+  : process.env.RAZORPAY_KEY_PRODUCTION;
 export const razorpay_secret = isDev
-  ? process.env.RAZORPAY_KEY_PRODUCTION
+  ? process.env.RAZORPAY_SECRET_KEY
   : process.env.RAZORPAY_SECRET_KEY_PRODUCTION;

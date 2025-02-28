@@ -52,8 +52,7 @@ export async function POST(req: NextRequest) {
     // Parse the request body
     const body = await req.json();
     const { data, type } = body;
-    console.log(data, type);
-
+    console.log(data, type, razorpay_key, razorpay_secret);
     // Check for missing fields
     if (!data || !type) {
       return NextResponse.json(
