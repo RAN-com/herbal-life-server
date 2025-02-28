@@ -10,7 +10,14 @@ const AboutPreview = () => {
   );
 
   return (
-    <Container className="scrollbar">
+    <Container
+      id={"about"}
+      sx={{
+        border: `2px solid ${theme?.accent_color}`,
+        borderRadius: "24px",
+        backgroundColor: theme?.background_color,
+      }}
+    >
       <div
         className="header"
         style={{
@@ -30,7 +37,7 @@ export default AboutPreview;
 
 const Container = styled("div")({
   width: "100%",
-  height: "100%",
+  height: "auto",
   overflowY: "auto",
   display: "flex",
   flexDirection: "column",

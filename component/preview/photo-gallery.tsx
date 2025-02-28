@@ -1,11 +1,11 @@
 import { styled } from "@mui/material";
-import ServiceCard from "@/component/card/services";
 import CustomTypography from "@/component/typography";
 import { useAppSelector } from "@/redux/store/hook";
+import Image from "next/image";
 
-const ServicesPreview = () => {
-  const services = useAppSelector(
-    (s) => s?.card?.card_data?.["services"] ?? null
+const PhotoGalleryPreview = () => {
+  const images = useAppSelector(
+    (s) => s?.card?.card_data?.["photo_gallery"] ?? null
   );
   const theme = useAppSelector(
     (s) => s?.card?.card_data?.["personal_details"]?.card_theme
@@ -14,7 +14,7 @@ const ServicesPreview = () => {
   return (
     <Container
       className="scrollbar"
-      id={"services"}
+      id={"photos"}
       sx={{
         border: `2px solid ${theme?.accent_color}`,
         borderRadius: "24px",
@@ -28,27 +28,37 @@ const ServicesPreview = () => {
         }}
       >
         <CustomTypography variant={"h5"} color={"white"} fontWeight={"medium"}>
-          Services
+          Photo Gallery
         </CustomTypography>
       </div>
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          gap: "12px",
-          paddingBottom: "32px",
-        }}
-      >
-        {services?.map((e) => (
-          <ServiceCard {...e} key={e.photo_url} />
-        ))}
-      </div>
+
+      {images?.map((img) => (
+        <div
+          key={img.url}
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+          }}
+        >
+          <ImageContainer>
+            <Image
+              src={
+                typeof img.url === "string"
+                  ? img.url
+                  : URL.createObjectURL(img.url)
+              }
+              alt={img?.description ?? ""}
+            />
+          </ImageContainer>
+        </div>
+      ))}
     </Container>
   );
 };
 
-export default ServicesPreview;
+export default PhotoGalleryPreview;
 
 const Container = styled("div")({
   width: "100%",
@@ -59,6 +69,7 @@ const Container = styled("div")({
   padding: "0px 32px",
   position: "relative",
   top: 0,
+  zIndex: 100,
   ".header": {
     width: "100%",
     maxWidth: "80%",
@@ -69,5 +80,24 @@ const Container = styled("div")({
     padding: "8px 0px",
     borderRadius: "0px 0px 12px 12px",
     marginBottom: "12px",
+  },
+});
+
+const ImageContainer = styled("div")({
+  width: "100%",
+  position: "relative",
+  top: 0,
+  ".icon": {
+    position: "absolute",
+    right: "12px",
+    top: "12px",
+    zIndex: 10,
+  },
+  backgroundColor: "#a8a8a8",
+  margin: "12px 0px",
+  img: {
+    width: "100%",
+    height: "100%",
+    objectFit: "contain",
   },
 });

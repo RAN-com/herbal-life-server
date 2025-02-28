@@ -3,6 +3,7 @@
 import React from "react";
 import {
   asyncGetCurrentStaffDomainData,
+  asyncSetCurrentStaff,
   setCardDetails,
   setCurrentDomain,
 } from "../redux/features/user/card";
@@ -31,6 +32,12 @@ export default function MainPage({ domain }: { domain: string | null }) {
       current_domain?.subscription &&
       moment().isBefore(moment(current_domain?.subscription?.valid_till))
     ) {
+      dispatch(
+        asyncSetCurrentStaff({
+          uid: current_domain?.created_by,
+          vid: current_domain?.staff_id,
+        })
+      );
       getCardDetail(current_domain?.staff_id)
         .then(({ data }) => {
           if (data) {

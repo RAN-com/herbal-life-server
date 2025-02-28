@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { firestore } from ".";
 import { DomainData } from "../types/card";
 
@@ -6,10 +6,11 @@ import { DomainData } from "../types/card";
 export const checkDomain = async (domain: string) => {
   const check = doc(firestore, `domains/${domain}`);
   const checkRef = await getDoc(check);
+  console.log(checkRef?.data(), checkRef?.exists(), domain);
   if (checkRef?.exists()) {
     return {
       message: "Exists",
-      data: checkRef?.data(),
+      data: checkRef?.data() as DomainData,
       status: true,
     };
   } else {
@@ -21,34 +22,12 @@ export const checkDomain = async (domain: string) => {
   }
 };
 
-export const assignOrUpdateDomain = async (
-  domain: string,
-  {
-    ...data
-  }: {
-    staff_id: string;
-    created_by: string;
-    created_on: string;
-    is_active: boolean;
-    subscription?: {
-      subscribed_on: string;
-      valid_till: string;
-    };
-  }
-) => {
-  const ref = doc(firestore, `domains/${domain}`);
-
-  await setDoc(ref, {
-    ...data,
-  });
-
-  return await checkDomain(domain);
-};
-
 export const getDomainData = async (domain: string) => {
-  const ref = doc(firestore, `domains/${domain}`);
+  const url = `domains/${domain}`;
+  const ref = doc(firestore, url);
   const docRef = await getDoc(ref);
 
+  console.log(domain, url, docRef?.data(), docRef?.exists());
   if (docRef?.exists()) {
     return {
       message: "Exists",

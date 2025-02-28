@@ -2,6 +2,7 @@ import { styled } from "@mui/material";
 import { CardData } from "@/types/card";
 import CustomTypography from "../typography";
 import { grey } from "@mui/material/colors";
+import Image from "next/image";
 
 type Props = CardData["services"][number] & {
   onClick?(): void;
@@ -22,14 +23,7 @@ const ServiceCard = ({
         {subtitle} asdf
       </CustomTypography>
       <div className="img_container">
-        <img
-          src={
-            typeof photo_url === "string"
-              ? photo_url
-              : URL.createObjectURL(photo_url)
-          }
-          alt={title}
-        />{" "}
+        <Image src={photo_url} alt={title} />
       </div>
       <CustomTypography variant={"body2"}>{description}</CustomTypography>
     </Container>

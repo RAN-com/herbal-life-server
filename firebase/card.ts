@@ -28,6 +28,7 @@ export const addOrUpdateCardDetails = async (
 ) => {
   const cardQuery = doc(firestore, `cards/${sid}`);
   const cardRef = await getDoc(cardQuery);
+
   if (cardRef.exists()) {
     errorToast("Card Already Exists. Updating the card now");
     await updateDoc(cardQuery, {

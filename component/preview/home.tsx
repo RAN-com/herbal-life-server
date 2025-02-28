@@ -53,9 +53,9 @@ const HomePreview = () => {
           width: "100%",
         }}
       />
-      {data?.personal_details?.displayName?.map((e, idx) => (
+      {data?.personal_details?.displayName?.map((e) => (
         <CustomTypography
-          key={idx}
+          key={e.value}
           color={"white"}
           fontSize={"1.1rem"}
           textAlign={"center"}
@@ -79,16 +79,17 @@ const HomePreview = () => {
       <Button
         variant={"outlined"}
         sx={{
-          margin: "auto 0px",
+          margin: "24px 0px",
           borderColor: "white",
           color: "white",
         }}
       >
         <CustomTypography
           textTransform={"none"}
+          sx={{}}
           onClick={() => {
             document
-              .querySelector(".preview_contact")
+              .querySelector("#contact")
               ?.scrollIntoView({ behavior: "smooth" });
           }}
         >

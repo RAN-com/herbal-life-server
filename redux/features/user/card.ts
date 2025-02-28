@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getDomainData } from "@/firebase/domain";
+import { checkDomain } from "@/firebase/domain";
 import { getStaff } from "@/firebase/staffs";
 import { CardData, DomainData } from "@/types/card";
 
@@ -27,7 +27,7 @@ export const asyncGetCurrentStaffDomainData = createAsyncThunk(
   `${name}/asyncGetCurrentStaffDomainData`,
   async ({ domain }: { domain: string | null }) => {
     if (!domain) return null;
-    return await getDomainData(domain);
+    return await checkDomain(domain);
   }
 );
 

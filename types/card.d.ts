@@ -17,6 +17,7 @@ export type CardData = {
     card_theme: {
       accent_color: string;
       hero_bg_image: string;
+      background_color: string;
     };
   };
   contact: {
