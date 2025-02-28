@@ -9,10 +9,12 @@ import CustomTypography from "@/component/typography";
 import moment from "moment";
 import { useAppSelector, useAppDispatch } from "@/redux/store/hook";
 import { setCurrentDomain } from "@/redux/features/user/card";
+import { razorpay_key, razorpay_secret } from "@/constants/value";
 
 // Using a server component to fetch subdomain from the headers
 export default function HomePage() {
   const dispatch = useAppDispatch();
+  console.log(razorpay_key, razorpay_secret);
   // Function to extract the first subdomain from the hostname
   const getFirstSubdomain = (hostname: string): string | null => {
     if (!hostname.includes("herbal-life")) return null;

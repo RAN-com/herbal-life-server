@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import Razorpay from "razorpay";
 import { decryptData } from "@/utils/crypto";
+import { razorpay_key, razorpay_secret } from "@/constants/value";
 
 type CenterUserPricing = {
   title: string;
@@ -16,12 +17,12 @@ export const runtime = "nodejs"; // Important for Razorpay
 
 // Utility function to create a Razorpay instance
 const createRazorpayInstance = () => {
-  if (!process.env.RAZORPAY_KEY || !process.env.RAZORPAY_SECRET) {
+  if (!razorpay_key || !razorpay_secret) {
     throw new Error("Razorpay environment variables are not set");
   }
   return new Razorpay({
-    key_id: process.env.RAZORPAY_KEY,
-    key_secret: process.env.RAZORPAY_SECRET,
+    key_id: razorpay_key,
+    key_secret: razorpay_secret,
   });
 };
 
@@ -91,6 +92,7 @@ export async function POST(req: NextRequest) {
     const order = await instance.orders.create({
       amount: parsedData.price * 100, // Convert to paisa
       currency: "INR",
+      receipt: "",
     });
 
     return NextResponse.json(

@@ -9,3 +9,10 @@ export const SERVER_URL = isDev
 export const SERVER_DOMAIN = isDev
   ? "localhost:3000"
   : "herbal-life.raninfo.in";
+
+export const razorpay_key = isDev
+  ? process.env.RAZORPAY_KEY
+  : process.env.RAZORPAY_SECRET_KEY;
+export const razorpay_secret = isDev
+  ? process.env.RAZORPAY_KEY_PRODUCTION
+  : process.env.RAZORPAY_SECRET_KEY_PRODUCTION;
