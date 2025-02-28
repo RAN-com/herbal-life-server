@@ -23,7 +23,13 @@ const ServiceCard = ({
         {subtitle} asdf
       </CustomTypography>
       <div className="img_container">
-        <Image src={photo_url} alt={title} />
+        <Image
+          src={photo_url}
+          alt={title}
+          style={{ width: "100%" }}
+          width={200}
+          height={200}
+        />
       </div>
       <CustomTypography variant={"body2"}>{description}</CustomTypography>
     </Container>
