@@ -4,7 +4,16 @@ module.exports = {
     ignoreDuringBuilds: process.env.NODE_ENV === "production", // Only skip linting during production builds
   },
   images: {
-    unoptimized: process.env.NODE_ENV !== "production", // Unoptimized only in dev mode, otherwise use default optimization
+    unoptimized: process.env.NODE_ENV !== "production", // Unoptimized only in dev mode, otherwise use default optimization,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "s3.amazonaws.com",
+        port: "",
+        pathname: "/my-bucket/**",
+        search: "",
+      },
+    ],
   },
   env: {
     RAZORPAY_KEY_PRODUCTION: process.env.RAZORPAY_KEY_PRODUCTION,

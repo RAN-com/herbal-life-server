@@ -31,5 +31,5 @@ const Container = styled("div")(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     maxWidth: "100%",
   },
-  paddingBottom: "16px",
+  paddingBottom: "32px",
 }));
