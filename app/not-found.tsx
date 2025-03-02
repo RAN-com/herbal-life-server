@@ -37,6 +37,8 @@ export default function NotFound() {
       <Image
         src={NotFoundPNG}
         alt=""
+        height={200}
+        width={200}
         style={{
           width: "100%",
           maxWidth: "440px",
@@ -91,7 +93,7 @@ export default function NotFound() {
 
 const Container = styled("div")({
   width: "100%",
-  height: "calc(var(--vh, 1vh) * 100)",
+  height: "calc(var(--vh, 1vh) * 100 - 164px)",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",

@@ -46,8 +46,7 @@ export default function MainPage({ domain }: { domain: string | null }) {
         })
         .catch(console.log);
     }
-  }, [existing_domain]);
+  }, [current_domain, dispatch, existing_domain]);
 
-  console.log(domain);
   return card_details ? <PreviewScreen /> : <NotFound />;
 }

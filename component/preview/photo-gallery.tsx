@@ -44,6 +44,8 @@ const PhotoGalleryPreview = () => {
         >
           <ImageContainer>
             <Image
+              width={200}
+              height={200}
               src={
                 typeof img.url === "string"
                   ? img.url
@@ -67,6 +69,10 @@ const Container = styled("div")({
   display: "flex",
   flexDirection: "column",
   padding: "0px 32px",
+  paddingBottom: "16px",
+  maxWidth: "calc(100% - 32px)",
+  margin: "auto",
+
   position: "relative",
   top: 0,
   zIndex: 100,

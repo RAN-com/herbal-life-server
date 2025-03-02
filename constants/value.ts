@@ -4,11 +4,11 @@
 const isDev = process.env.NODE_ENV === "development";
 export const SERVER_URL = isDev
   ? "http://localhost:3000/api"
-  : "https://herbal-life.raninfo.in/api";
+  : "https://nutrition.raninfo.in/api";
 
 export const SERVER_DOMAIN = isDev
-  ? "localhost:3000"
-  : "herbal-life.raninfo.in";
+  ? "nutrition.localhost:3000"
+  : "nutrition.raninfo.in";
 
 export const razorpay_key = isDev
   ? process.env.RAZORPAY_KEY

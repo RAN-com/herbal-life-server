@@ -41,7 +41,7 @@ export async function OPTIONS() {
 // GET Handler
 export const GET = async () => {
   return NextResponse.json(
-    { message: "GET method not supported on this route." },
+    { message: "GET method not supported on this route.", status: 405 },
     { status: 405, headers: corsHeaders }
   );
 };
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     // Check for missing fields
     if (!data || !type) {
       return NextResponse.json(
-        { message: "Missing required fields: 'data' or 'type'" },
+        { message: "Missing required fields: 'data' or 'type'", status: 400 },
         { status: 400, headers: corsHeaders }
       );
     }
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
         currency: "INR",
       });
       return NextResponse.json(
-        { message: "Created Order Successfully", order },
+        { message: "Created Order Successfully", order, status: 201 },
         { status: 201, headers: corsHeaders }
       );
     }
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     // Validate parsed data
     if (!parsedData || typeof parsedData.price !== "number") {
       return NextResponse.json(
-        { message: "Invalid or incomplete data provided" },
+        { message: "Invalid or incomplete data provided", status: 400 },
         { status: 400, headers: corsHeaders }
       );
     }
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(
-      { message: "Created Order Successfully", order },
+      { message: "Created Order Successfully", order, status: 201 },
       { status: 201, headers: corsHeaders }
     );
   } catch (error: unknown) {
@@ -104,6 +104,7 @@ export async function POST(req: NextRequest) {
       {
         message: "Internal Server Error",
         error: error instanceof Error ? error.message : "Unknown error",
+        status: 500,
       },
       { status: 500, headers: corsHeaders }
     );

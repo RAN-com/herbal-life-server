@@ -57,6 +57,10 @@ const Container = styled("div")({
   display: "flex",
   flexDirection: "column",
   padding: "0px 32px",
+  paddingBottom: "16px",
+  maxWidth: "calc(100% - 32px)",
+  margin: "auto",
+
   position: "relative",
   top: 0,
   ".header": {

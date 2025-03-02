@@ -5,6 +5,8 @@ import CustomTypography from "@/component/typography";
 import { SERVER_DOMAIN } from "@/constants/value";
 import { useAppSelector } from "@/redux/store/hook";
 import { successToast } from "@/utils/toast";
+import React from "react";
+import Link from "next/link";
 
 const ContactPreview = () => {
   const contact = useAppSelector(
@@ -50,7 +52,7 @@ const ContactPreview = () => {
         <Row>
           {contact?.phone?.map((e, i) => {
             return (
-              <>
+              <React.Fragment key={i}>
                 <CustomIcon
                   name={"LUCIDE_ICONS"}
                   icon="LuPhone"
@@ -60,8 +62,17 @@ const ContactPreview = () => {
                     opacity: i === 0 ? 1 : 0,
                   }}
                 />
-                <CustomTypography>{e}</CustomTypography>
-              </>
+                <CustomTypography
+                  sx={{
+                    "& *": {
+                      color: "inherit",
+                      textDecoration: "none",
+                    },
+                  }}
+                >
+                  <Link href={`tel:+91${e}`}>{e}</Link>
+                </CustomTypography>
+              </React.Fragment>
             );
           })}
         </Row>
@@ -122,6 +133,10 @@ const Container = styled("div")({
   flexDirection: "column",
   padding: "0px 32px",
   position: "relative",
+  paddingBottom: "16px",
+  maxWidth: "calc(100% - 32px)",
+  margin: "auto",
+
   top: 0,
   ".header": {
     width: "100%",

@@ -7,11 +7,7 @@ import ContactPreview from "./contact";
 import { styled } from "@mui/material";
 const PreviewScreen = () => {
   return (
-    <Container
-    // sx={{
-    //   backgroundColor: theme?.accent_color + "2a",
-    // }}
-    >
+    <Container>
       <HomePreview />
       <AboutPreview />
       <ServicesPreview />
@@ -30,11 +26,10 @@ const Container = styled("div")(({ theme }) => ({
   height: "100%",
   display: "grid",
   gridTemplateColumns: "1fr",
-  gridTemplateRows: "repeat(6, minmax(420px, 1fr))",
   margin: "auto",
   gap: "12px",
   [theme.breakpoints.down("sm")]: {
     maxWidth: "100%",
   },
-  paddingBottom: "12px",
+  paddingBottom: "16px",
 }));

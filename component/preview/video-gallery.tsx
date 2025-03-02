@@ -11,50 +11,57 @@ const VideoGalleryPreview = () => {
   );
 
   return (
-    <Container
-      className="scrollbar"
-      id={"videos"}
-      sx={{
-        border: `2px solid ${theme?.accent_color}`,
-        borderRadius: "24px",
-        backgroundColor: theme?.background_color,
-      }}
-    >
-      <div
-        className="header"
-        style={{
-          backgroundColor: theme?.accent_color,
+    images.length !== 0 && (
+      <Container
+        className="scrollbar"
+        id={"videos"}
+        sx={{
+          border: `2px solid ${theme?.accent_color}`,
+          borderRadius: "24px",
+          backgroundColor: theme?.background_color,
         }}
       >
-        <CustomTypography variant={"h5"} color={"white"} fontWeight={"medium"}>
-          Video Gallery
-        </CustomTypography>
-      </div>
-
-      {images?.map((img) => (
         <div
-          key={img.title}
+          className="header"
           style={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            gap: "12px",
+            backgroundColor: theme?.accent_color,
           }}
         >
-          <ImageContainer>
-            <video
-              src={
-                typeof img.url === "string"
-                  ? img.url
-                  : URL.createObjectURL(img.url)
-              }
-              autoPlay={true}
-              controls={true}
-            />
-          </ImageContainer>
+          <CustomTypography
+            variant={"h5"}
+            color={"white"}
+            fontWeight={"medium"}
+          >
+            Video Gallery
+          </CustomTypography>
         </div>
-      ))}
-    </Container>
+
+        {images?.map((img) => (
+          <div
+            key={img.title}
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+            }}
+          >
+            <ImageContainer>
+              <video
+                src={
+                  typeof img.url === "string"
+                    ? img.url
+                    : URL.createObjectURL(img.url)
+                }
+                autoPlay={true}
+                controls={true}
+                controlsList="nodownload"
+              />
+            </ImageContainer>
+          </div>
+        ))}
+      </Container>
+    )
   );
 };
 
@@ -65,6 +72,9 @@ const Container = styled("div")({
   height: "100%",
   overflowY: "auto",
   display: "flex",
+  paddingBottom: "16px",
+  maxWidth: "calc(100% - 32px)",
+  margin: "auto",
   flexDirection: "column",
   padding: "0px 32px",
   position: "relative",
