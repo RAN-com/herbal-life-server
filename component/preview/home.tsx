@@ -34,8 +34,8 @@ const HomePreview = () => {
       <Avatar
         src={data?.personal_details?.center_logo}
         sx={{
-          width: "200px",
-          height: "200px",
+          width: "120px",
+          height: "120px",
           boxShadow: "0px 0px 4px 2px #2222224c",
         }}
       />
