@@ -1,7 +1,6 @@
 import { styled } from "@mui/material";
 import CustomTypography from "@/component/typography";
 import { useAppSelector } from "@/redux/store/hook";
-import Image from "next/image";
 
 const PhotoGalleryPreview = () => {
   const images = useAppSelector(
@@ -43,7 +42,10 @@ const PhotoGalleryPreview = () => {
           }}
         >
           <ImageContainer>
-            <Image
+            {/* 
+            eslint-disable-next-line @next/next/no-img-element
+            */}
+            <img
               width={200}
               height={200}
               src={

@@ -2,7 +2,6 @@ import { styled } from "@mui/material";
 import { CardData } from "@/types/card";
 import CustomTypography from "../typography";
 import { grey } from "@mui/material/colors";
-import Image from "next/image";
 
 type Props = CardData["services"][number] & {
   onClick?(): void;
@@ -23,7 +22,10 @@ const ServiceCard = ({
         {subtitle} asdf
       </CustomTypography>
       <div className="img_container">
-        <Image
+        {/* 
+            eslint-disable-next-line @next/next/no-img-element
+            */}
+        <img
           src={photo_url}
           alt={title}
           style={{ width: "100%" }}
