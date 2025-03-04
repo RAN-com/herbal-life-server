@@ -7,6 +7,7 @@ import { useAppSelector } from "@/redux/store/hook";
 type Props = CardData["services"][number] & {
   onClick?(): void;
 };
+
 const ServiceCard = ({
   title,
   subtitle,
@@ -27,9 +28,7 @@ const ServiceCard = ({
         {subtitle} asdf
       </CustomTypography>
       <div className="img_container">
-        {/* 
-            eslint-disable-next-line @next/next/no-img-element
-            */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={photo_url}
           alt={title}

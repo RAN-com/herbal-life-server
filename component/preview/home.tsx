@@ -311,7 +311,7 @@ const HomePreview = () => {
             }}
           >
             <CustomTypography variant="h6" fontWeight={"400"}>
-              Enquire Now
+              Book Now
             </CustomTypography>
           </Button>
         </SocialContainer>

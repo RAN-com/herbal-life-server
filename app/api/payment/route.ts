@@ -54,15 +54,7 @@ export async function POST(req: NextRequest) {
     const { data, type } = body;
     console.log(data, type, razorpay_key, razorpay_secret);
     // Check for missing fields
-    if (!data || !type) {
-      return NextResponse.json(
-        { message: "Missing required fields: 'data' or 'type'", status: 400 },
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    // Handle APPOINTMENT_CARD type
-    if (type === "APPOINTMENT_CARD") {
+    if (!!type && type === "APPOINTMENT_CARD") {
       const instance = createRazorpayInstance();
       const order = await instance.orders.create({
         amount: 500 * 100, // Example amount in paisa
@@ -74,10 +66,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!data) {
+      return NextResponse.json(
+        { message: "Missing required fields: 'data' or 'type'", status: 400 },
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    // Handle APPOINTMENT_CARD type
+
     // Decrypt data
     const decryptedData = decryptData(data) as string;
     const parsedData = JSON.parse(decryptedData) as CenterUserPricing;
-
+    console.log(parsedData);
     // Validate parsed data
     if (!parsedData || typeof parsedData.price !== "number") {
       return NextResponse.json(

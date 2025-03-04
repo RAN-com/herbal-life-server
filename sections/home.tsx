@@ -19,10 +19,8 @@ export default function MainPage({ domain }: { domain: string | null }) {
   const card_details = useAppSelector((s) => s.card.card_data);
 
   React.useEffect(() => {
-    // if (!existing_domain || existing_domain === domain) {
     dispatch(setCurrentDomain(domain));
     dispatch(asyncGetCurrentStaffDomainData({ domain }));
-    // }
   }, [domain]);
 
   React.useEffect(() => {
