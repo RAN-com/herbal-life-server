@@ -1,8 +1,10 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { firestore } from ".";
 import { updateStaff } from "./staffs";
 import { AppointmentData, StaffData } from "@/types/staff";
 import { errorToast } from "@/utils/toast";
+import { encryptData } from "@/utils/crypto";
+import moment from "moment";
 
 export const checkSubdomain = async (uid: string, domain: string) => {
   const appRef = doc(firestore, `users/${uid}/appointments/${domain}`);
@@ -68,31 +70,50 @@ export const setSubDomainToStaff = async (
   }
 };
 
-export const getAllAppointments = async (uid: string, domain: string) => {
-  const appRef = doc(firestore, `users/${uid}/appointments/${domain}`);
-  const docRef = await getDoc(appRef);
+export const createAppointment = async (
+  sid: string,
+  data: Omit<AppointmentData, "aid" | "createdOn">
+) => {
+  try {
+    const appRef = doc(firestore, `appointments/${sid}`);
+    const docSnap = await getDoc(appRef);
 
-  if (!docRef.exists()) {
-    return {
-      message: "No Data Found",
-      data: null,
-      status: false,
-    };
-  }
+    const selectedDate = moment(data.appointment_date).format("YYYY-MM-DD"); // User selected date
+    const todayDate = moment().format("YYYY-MM-DD"); // Current date
 
-  const data = docRef.data()?.data as AppointmentData[];
+    // **Check if selected date is in the future**
+    if (!moment(selectedDate).isAfter(todayDate)) {
+      return {
+        success: false,
+        message: "Appointments can only be booked for future dates",
+      };
+    }
 
-  if (data.length === 0) {
-    return {
-      message: "No Data Found",
-      data: null,
-      status: false,
+    const newAppointment: AppointmentData = {
+      ...data,
+      aid: encryptData(data.phone + new Date().toString()) as string, // Generate unique ID based on phone
+      createdOn: moment().toISOString(), // Current timestamp for creation
     };
-  } else {
+
+    if (docSnap.exists()) {
+      await updateDoc(appRef, {
+        records: arrayUnion(newAppointment),
+        total_records: (docSnap.data().total_records || 0) + 1,
+      });
+    } else {
+      await setDoc(appRef, {
+        records: [newAppointment],
+        total_records: 1,
+      });
+    }
+
     return {
-      message: "Data Found",
-      data,
-      status: true,
+      success: true,
+      message: "Appointment added successfully",
+      data: newAppointment,
     };
+  } catch (error) {
+    console.error("Error adding appointment:", error);
+    return { success: false, message: "Error adding appointment" };
   }
 };

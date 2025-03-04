@@ -41,7 +41,15 @@ const ServicesPreview = () => {
         }}
       >
         {services?.map((e) => (
-          <ServiceCard {...e} key={e.photo_url} />
+          <ServiceCard
+            {...e}
+            key={e.photo_url}
+            onClick={() =>
+              document
+                .getElementById("contact")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
+          />
         ))}
       </div>
     </Container>

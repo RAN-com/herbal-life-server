@@ -15,16 +15,15 @@ import NotFound from "../app/not-found";
 // Using a server component to fetch subdomain from the headers
 export default function MainPage({ domain }: { domain: string | null }) {
   const dispatch = useAppDispatch();
-  const existing_domain = useAppSelector((s) => s.card.domain);
   const current_domain = useAppSelector((s) => s.card.staff_domain);
   const card_details = useAppSelector((s) => s.card.card_data);
 
   React.useEffect(() => {
-    if (!existing_domain || existing_domain === domain) {
-      dispatch(setCurrentDomain(domain));
-      dispatch(asyncGetCurrentStaffDomainData({ domain }));
-    }
-  }, [domain, existing_domain]);
+    // if (!existing_domain || existing_domain === domain) {
+    dispatch(setCurrentDomain(domain));
+    dispatch(asyncGetCurrentStaffDomainData({ domain }));
+    // }
+  }, [domain]);
 
   React.useEffect(() => {
     if (
@@ -46,7 +45,11 @@ export default function MainPage({ domain }: { domain: string | null }) {
         })
         .catch(console.log);
     }
-  }, [current_domain, dispatch, existing_domain]);
+  }, [current_domain]);
 
-  return card_details ? <PreviewScreen /> : <NotFound />;
+  return card_details && domain ? (
+    <PreviewScreen domain={domain} />
+  ) : (
+    <NotFound />
+  );
 }

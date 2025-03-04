@@ -5,7 +5,17 @@ import PhotoGalleryPreview from "./photo-gallery";
 import VideoGalleryPreview from "./video-gallery";
 import ContactPreview from "./contact";
 import { styled } from "@mui/material";
-const PreviewScreen = () => {
+import React from "react";
+import { useAppSelector } from "@/redux/store/hook";
+import CustomTypography from "../typography";
+import { updateWebViews } from "@/firebase/domain";
+const PreviewScreen = ({ domain }: { domain: string }) => {
+  const data = useAppSelector((s) => s.card.staff_domain);
+
+  React.useEffect(() => {
+    updateWebViews(domain as string);
+  }, []);
+
   return (
     <Container>
       <HomePreview />
@@ -14,6 +24,18 @@ const PreviewScreen = () => {
       <PhotoGalleryPreview />
       <VideoGalleryPreview />
       <ContactPreview />
+      <div
+        style={{
+          padding: "0px 32px",
+          position: "relative",
+          maxWidth: "calc(100% - 32px)",
+          margin: "auto",
+        }}
+      >
+        <CustomTypography>
+          Total Page Counts : {data?.views ?? 0}
+        </CustomTypography>
+      </div>
     </Container>
   );
 };
@@ -28,6 +50,7 @@ const Container = styled("div")(({ theme }) => ({
   gridTemplateColumns: "1fr",
   margin: "auto",
   gap: "12px",
+  backgroundColor: "white",
   [theme.breakpoints.down("sm")]: {
     maxWidth: "100%",
   },

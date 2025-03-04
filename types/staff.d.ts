@@ -31,9 +31,8 @@ export type AppointmentData = {
   name: string;
   phone: string;
   email?: string;
-  assigned_to: {
+  appointment_date: string;
+  assigned_to?: {
     sid: string;
-    name: string;
   };
-  gender: string;
 };

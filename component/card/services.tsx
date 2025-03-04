@@ -1,7 +1,8 @@
-import { styled } from "@mui/material";
+import { Button, styled } from "@mui/material";
 import { CardData } from "@/types/card";
 import CustomTypography from "../typography";
 import { grey } from "@mui/material/colors";
+import { useAppSelector } from "@/redux/store/hook";
 
 type Props = CardData["services"][number] & {
   onClick?(): void;
@@ -13,6 +14,10 @@ const ServiceCard = ({
   description,
   onClick,
 }: Props) => {
+  const data = useAppSelector(
+    (s) => s.card.card_data?.personal_details?.card_theme
+  );
+
   return (
     <Container onClick={onClick}>
       <CustomTypography fontWeight={"bold"} variant={"h6"}>
@@ -28,12 +33,28 @@ const ServiceCard = ({
         <img
           src={photo_url}
           alt={title}
-          style={{ width: "100%" }}
+          style={{ width: "100%", objectFit: "cover" }}
           width={200}
           height={200}
         />
       </div>
       <CustomTypography variant={"body2"}>{description}</CustomTypography>
+      <Button
+        variant="contained"
+        disableElevation
+        disableFocusRipple
+        disableRipple
+        disableTouchRipple
+        sx={{
+          backgroundColor: data?.accent_color,
+          margin: "12px 0px",
+          "&:hover": {
+            backgroundColor: data?.accent_color + "dd",
+          },
+        }}
+      >
+        Enquire Now
+      </Button>
     </Container>
   );
 };
@@ -57,7 +78,6 @@ const Container = styled("div")({
     "& img": {
       width: "100%",
       height: "100%",
-      objectFit: "contain",
     },
   },
 });

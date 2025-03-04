@@ -9,9 +9,9 @@ export type CardData = {
     valid_till: string;
   };
   personal_details: {
-    whatsapp?: string
-    email?: string
-    map_embed?: string
+    whatsapp?: string;
+    email?: string;
+    map_embed?: string;
     center_name?: string;
     displayName: {
       value: string;
@@ -53,9 +53,9 @@ export type CardData = {
 
 export type CardCreateData = {
   personal_details?: {
-    whatsapp?: string
-    email?: string
-    map_embed?: string
+    whatsapp?: string;
+    email?: string;
+    map_embed?: string;
     center_name?: string;
     center_logo?: string;
     displayName?: { value: string; designation: string }[];
@@ -97,4 +97,5 @@ export type DomainData = {
     subscribed_on: string;
     valid_till: string;
   };
+  views?: number;
 };
