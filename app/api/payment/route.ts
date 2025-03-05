@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     if (!!type && type === "APPOINTMENT_CARD") {
       const instance = createRazorpayInstance();
       const order = await instance.orders.create({
-        amount: 500 * 100, // Example amount in paisa
+        amount: 80000, // Example amount in paisa
         currency: "INR",
       });
       return NextResponse.json(
