@@ -7,10 +7,8 @@ import ContactPreview from "./contact";
 import { styled } from "@mui/material";
 import React from "react";
 import { useAppSelector } from "@/redux/store/hook";
-import CustomTypography from "../typography";
 import { updateWebViews } from "@/firebase/domain";
 const PreviewScreen = ({ domain }: { domain: string }) => {
-  const data = useAppSelector((s) => s.card.staff_domain);
   const theme = useAppSelector(
     (s) => s.card?.card_data?.personal_details?.card_theme
   );
