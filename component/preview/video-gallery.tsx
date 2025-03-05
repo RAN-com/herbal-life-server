@@ -13,6 +13,7 @@ const VideoGalleryPreview = () => {
   return (
     images.length !== 0 && (
       <Container
+        key={"video"}
         className="scrollbar"
         id={"videos"}
         sx={{

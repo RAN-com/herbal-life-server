@@ -1,4 +1,12 @@
-import { Avatar, Button, Dialog, Divider, Modal, styled } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  Dialog,
+  Divider,
+  Modal,
+  styled,
+  Typography,
+} from "@mui/material";
 import { grey } from "@mui/material/colors";
 import CustomTypography from "@/component/typography";
 import useFluidTypography from "@/hooks/fluid-typo";
@@ -28,6 +36,7 @@ const validationSchema = Yup.object().shape({
 const MSG_TEMPLATE =
   "Hi, I’m interested in learning more about your nutrition services!";
 const HomePreview = () => {
+  const domain = useAppSelector((s) => s.card.staff_domain);
   const data = useAppSelector((s) => s.card.card_data);
   const staff = useAppSelector((s) => s.card.current_staff);
 
@@ -190,6 +199,21 @@ const HomePreview = () => {
           zIndex: 100,
         }}
       >
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            padding: "8px 12px",
+            backgroundColor:
+              data?.personal_details?.card_theme?.background_color + "aa",
+            backdropFilter: "blur(10px)",
+          }}
+        >
+          <Typography>
+            Views : <b>{domain?.views ?? 0}</b>
+          </Typography>
+        </div>
         <Avatar
           src={data?.personal_details?.center_logo}
           sx={{

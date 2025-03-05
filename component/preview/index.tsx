@@ -11,31 +11,26 @@ import CustomTypography from "../typography";
 import { updateWebViews } from "@/firebase/domain";
 const PreviewScreen = ({ domain }: { domain: string }) => {
   const data = useAppSelector((s) => s.card.staff_domain);
+  const theme = useAppSelector(
+    (s) => s.card?.card_data?.personal_details?.card_theme
+  );
 
   React.useEffect(() => {
     updateWebViews(domain as string);
   }, []);
 
   return (
-    <Container>
+    <Container
+      sx={{
+        backgroundColor: theme?.accent_color + "9a",
+      }}
+    >
       <HomePreview />
       <AboutPreview />
       <ServicesPreview />
       <PhotoGalleryPreview />
       <VideoGalleryPreview />
       <ContactPreview />
-      <div
-        style={{
-          padding: "0px 32px",
-          position: "relative",
-          maxWidth: "calc(100% - 32px)",
-          margin: "auto",
-        }}
-      >
-        <CustomTypography>
-          Total Page Counts : {data?.views ?? 0}
-        </CustomTypography>
-      </div>
     </Container>
   );
 };

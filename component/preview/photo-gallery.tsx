@@ -1,7 +1,9 @@
-import { styled } from "@mui/material";
+import { Modal, styled } from "@mui/material";
 import CustomTypography from "@/component/typography";
 import { useAppSelector } from "@/redux/store/hook";
 import { Masonry } from "@mui/lab";
+import React from "react";
+import CustomIcon from "../icons";
 
 const PhotoGalleryPreview = () => {
   const images =
@@ -9,6 +11,9 @@ const PhotoGalleryPreview = () => {
   const theme = useAppSelector(
     (s) => s?.card?.card_data?.["personal_details"]?.card_theme
   );
+  const [selectedImage, setSelectedImage] = React.useState<
+    (typeof images)[number] | null
+  >(null);
 
   return (
     <Container
@@ -20,6 +25,50 @@ const PhotoGalleryPreview = () => {
         backgroundColor: theme?.background_color,
       }}
     >
+      <Modal
+        open={!!selectedImage}
+        onClose={() => setSelectedImage(null)}
+        sx={{
+          ".container": {
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100vw",
+            justifyContent: "center",
+            height: "100vh",
+            position: "relative",
+            top: 0,
+            "& header": {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              padding: "12px",
+              border: "1px solid black",
+              backgroundColor: theme?.background_color,
+            },
+            img: {
+              width: "100%",
+              height: "100%",
+              // maxWidth: "320px",
+              objectFit: "contain",
+            },
+          },
+        }}
+      >
+        <div className="container">
+          <header>
+            <CustomIcon
+              onClick={() => setSelectedImage(null)}
+              name="LUCIDE_ICONS"
+              icon="LuX"
+            />
+          </header>
+          <img
+            src={selectedImage?.url as string}
+            alt={(selectedImage?.description as string) ?? ""}
+          />
+        </div>
+      </Modal>
       <div
         className="header"
         style={{
@@ -32,7 +81,7 @@ const PhotoGalleryPreview = () => {
       </div>
       <Masonry columns={2} spacing={2}>
         {[...images, ...images, ...images, ...images]?.map((img, idx) => (
-          <ImageContainer key={idx}>
+          <ImageContainer key={idx} onClick={() => setSelectedImage(img)}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={
