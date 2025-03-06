@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import Razorpay from "razorpay";
 import { decryptData } from "@/utils/crypto";
 import { razorpay_key, razorpay_secret } from "@/constants/value";
+import priceJSON from "./data.json";
 
 type CenterUserPricing = {
   title: string;
@@ -57,11 +58,19 @@ export async function POST(req: NextRequest) {
     if (!!type && type === "APPOINTMENT_CARD") {
       const instance = createRazorpayInstance();
       const order = await instance.orders.create({
-        amount: 100, // Example amount in paisa
+        amount: priceJSON?.price, // Example amount in paisa
         currency: "INR",
       });
       return NextResponse.json(
-        { message: "Created Order Successfully", order, status: 201 },
+        {
+          message: "Created Order Successfully",
+          order,
+          status: 201,
+          keys: {
+            key: razorpay_key,
+            secret: razorpay_secret,
+          },
+        },
         { status: 201, headers: corsHeaders }
       );
     }
@@ -96,7 +105,15 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(
-      { message: "Created Order Successfully", order, status: 201 },
+      {
+        message: "Created Order Successfully",
+        order,
+        status: 201,
+        keys: {
+          key: razorpay_key,
+          secret: razorpay_secret,
+        },
+      },
       { status: 201, headers: corsHeaders }
     );
   } catch (error: unknown) {

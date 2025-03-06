@@ -13,10 +13,12 @@ import {
 import storage from "redux-persist/lib/storage";
 import logger from "redux-logger";
 import staffSlice from "../features/user/card";
+import paymentSlice from "../features/payment/slice";
 
 // Define RootState type based on combined reducers
 const appReducer = combineReducers({
   card: staffSlice,
+  payment: paymentSlice,
 });
 
 // Persist configuration

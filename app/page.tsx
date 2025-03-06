@@ -69,7 +69,7 @@ export default function HomePage() {
     }, 600)();
   }, [host]);
 
-  return loading && typeof domain === "undefined" ? (
+  return loading ? (
     <Loader />
   ) : domain === "main" ? (
     <CustomTypography>Date : {moment().format("YYYY")}</CustomTypography>

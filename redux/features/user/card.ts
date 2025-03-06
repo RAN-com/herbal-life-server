@@ -4,6 +4,8 @@ import { getStaff } from "@/firebase/staffs";
 import { CardData, DomainData } from "@/types/card";
 
 import { StaffData } from "@/types/staff";
+import { CenterUser } from "@/types/user";
+import { getUserDocument } from "@/firebase";
 
 type INITIAL_STATE = {
   staffs_loading: boolean;
@@ -11,6 +13,7 @@ type INITIAL_STATE = {
   card_data: CardData | null;
   domain: string | null;
   staff_domain: DomainData | null;
+  admin_data: CenterUser | null;
 };
 
 const initialState: INITIAL_STATE = {
@@ -19,6 +22,7 @@ const initialState: INITIAL_STATE = {
   staff_domain: null,
   domain: null,
   card_data: null,
+  admin_data: null,
 };
 
 const name = "staffs";
@@ -35,6 +39,13 @@ export const asyncSetCurrentStaff = createAsyncThunk(
   `${name}/asyncSetCurrentStaff`,
   async ({ uid, vid }: { uid: string; vid: string }) => {
     return await getStaff(uid, vid);
+  }
+);
+
+export const asyncGetCenterUser = createAsyncThunk(
+  `${name}/asyncGetCenterUser`,
+  async (uid: string) => {
+    return await getUserDocument(uid);
   }
 );
 
@@ -79,6 +90,21 @@ const staffSlice = createSlice({
     builders.addCase(asyncSetCurrentStaff.fulfilled, (state, action) => {
       if (action.payload && action.payload?.data) {
         state.current_staff = action.payload?.data as StaffData;
+      }
+      state.staffs_loading = false;
+    });
+
+    builders.addCase(asyncGetCenterUser.pending, (state) => {
+      state.staffs_loading = true;
+    });
+
+    builders.addCase(asyncGetCenterUser.rejected, (state) => {
+      state.staffs_loading = false;
+    });
+
+    builders.addCase(asyncGetCenterUser.fulfilled, (state, action) => {
+      if (action.payload && action.payload?.data) {
+        state.admin_data = action.payload?.data as CenterUser;
       }
       state.staffs_loading = false;
     });
