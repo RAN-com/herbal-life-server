@@ -19,7 +19,7 @@ export default function PaymentPage() {
   const loading = useAppSelector((s) => s.payment.status === "idle");
 
   useEffect(() => {
-    if (!oid || !uid || !sid) {
+    if (!oid || !uid) {
       router.push("/not-found"); // Redirect to 404 if params are missing
     } else {
       dispatch(
