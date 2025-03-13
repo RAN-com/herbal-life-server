@@ -93,7 +93,7 @@ export default function NotFound() {
 
 const Container = styled("div")({
   width: "100%",
-  height: `calc(${window.screen.availHeight}px - 164px)`,
+  height: "calc(100%)",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",

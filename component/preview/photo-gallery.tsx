@@ -3,6 +3,8 @@ import CustomTypography from "@/component/typography";
 import { useAppSelector } from "@/redux/store/hook";
 import { Masonry } from "@mui/lab";
 import React from "react";
+import "react-image-gallery/styles/css/image-gallery.css";
+import ImageGallery from "react-image-gallery";
 import CustomIcon from "../icons";
 
 const PhotoGalleryPreview = () => {
@@ -11,9 +13,7 @@ const PhotoGalleryPreview = () => {
   const theme = useAppSelector(
     (s) => s?.card?.card_data?.["personal_details"]?.card_theme
   );
-  const [selectedImage, setSelectedImage] = React.useState<
-    (typeof images)[number] | null
-  >(null);
+  const [selectedImage, setSelectedImage] = React.useState<number | null>(null);
 
   return (
     <Container
@@ -55,7 +55,34 @@ const PhotoGalleryPreview = () => {
           },
         }}
       >
-        <div className="container">
+        <div style={{ margin: "auto", height: "100%", width: "100%" }}>
+          <div>
+            <CustomIcon
+              onClick={() => setSelectedImage(null)}
+              name="LUCIDE_ICONS"
+              icon="LuX"
+              size={18}
+              color="black"
+              sx={{
+                width: "32px",
+                margin: "12px",
+                height: "32px",
+                backgroundColor: "white",
+              }}
+            />
+          </div>
+          <ImageGallery
+            startIndex={selectedImage ?? undefined}
+            autoPlay={false}
+            showIndex={true}
+            showThumbnails={false}
+            items={images.map((e) => ({
+              original: e.url,
+            }))}
+            disableThumbnailScroll={true}
+          />
+        </div>
+        {/* <div className="container">
           <header>
             <CustomIcon
               onClick={() => setSelectedImage(null)}
@@ -67,7 +94,7 @@ const PhotoGalleryPreview = () => {
             src={selectedImage?.url as string}
             alt={(selectedImage?.description as string) ?? ""}
           />
-        </div>
+        </div> */}
       </Modal>
       <div
         className="header"
@@ -80,8 +107,8 @@ const PhotoGalleryPreview = () => {
         </CustomTypography>
       </div>
       <Masonry columns={2} spacing={2}>
-        {[...images, ...images, ...images, ...images]?.map((img, idx) => (
-          <ImageContainer key={idx} onClick={() => setSelectedImage(img)}>
+        {images?.map((img, idx) => (
+          <ImageContainer key={idx} onClick={() => setSelectedImage(idx)}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={
@@ -93,7 +120,8 @@ const PhotoGalleryPreview = () => {
               loading="lazy"
               style={{
                 width: "100%",
-                height: idx % 2 === 0 ? "auto" : "250px",
+                height: "250px",
+                // aspectRatio: "1/1",
                 display: "block",
                 objectFit: "cover",
               }}

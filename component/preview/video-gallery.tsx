@@ -1,6 +1,7 @@
 import { styled } from "@mui/material";
 import CustomTypography from "@/component/typography";
 import { useAppSelector } from "@/redux/store/hook";
+import { encryptData } from "@/utils/crypto";
 
 const VideoGalleryPreview = () => {
   const images = useAppSelector(
@@ -11,58 +12,52 @@ const VideoGalleryPreview = () => {
   );
 
   return (
-    images.length !== 0 && (
-      <Container
-        key={"video"}
-        className="scrollbar"
-        id={"videos"}
-        sx={{
-          border: `2px solid ${theme?.accent_color}`,
-          borderRadius: "24px",
-          backgroundColor: theme?.background_color,
+    <Container
+      key={encryptData(`${new Date().toISOString()}-video`)}
+      className="scrollbar"
+      id={"videos"}
+      sx={{
+        border: `2px solid ${theme?.accent_color}`,
+        borderRadius: "24px",
+        backgroundColor: theme?.background_color,
+      }}
+    >
+      <div
+        className="header"
+        style={{
+          backgroundColor: theme?.accent_color,
         }}
       >
+        <CustomTypography variant={"h5"} color={"white"} fontWeight={"medium"}>
+          Video Gallery
+        </CustomTypography>
+      </div>
+
+      {images?.map((img) => (
         <div
-          className="header"
+          key={img.title}
           style={{
-            backgroundColor: theme?.accent_color,
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
           }}
         >
-          <CustomTypography
-            variant={"h5"}
-            color={"white"}
-            fontWeight={"medium"}
-          >
-            Video Gallery
-          </CustomTypography>
+          <ImageContainer>
+            <video
+              src={
+                typeof img.url === "string"
+                  ? img.url
+                  : URL.createObjectURL(img.url)
+              }
+              autoPlay={true}
+              controls={true}
+              controlsList="nodownload"
+            />
+          </ImageContainer>
         </div>
-
-        {images?.map((img) => (
-          <div
-            key={img.title}
-            style={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              gap: "12px",
-            }}
-          >
-            <ImageContainer>
-              <video
-                src={
-                  typeof img.url === "string"
-                    ? img.url
-                    : URL.createObjectURL(img.url)
-                }
-                autoPlay={true}
-                controls={true}
-                controlsList="nodownload"
-              />
-            </ImageContainer>
-          </div>
-        ))}
-      </Container>
-    )
+      ))}
+    </Container>
   );
 };
 

@@ -78,7 +78,12 @@ const updateOrderStatus = async (
   }
 
   // Prepare updated data
-  const updatedData: any = { status: status };
+  interface UpdatedData {
+    status: PaymentStatus;
+    payment_details?: PaymentDetails;
+  }
+
+  const updatedData: UpdatedData = { status: status };
   if (status === "paid" && paymentDetails) {
     updatedData.payment_details = paymentDetails;
   }
