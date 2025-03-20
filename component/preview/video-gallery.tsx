@@ -2,6 +2,7 @@ import { styled } from "@mui/material";
 import CustomTypography from "@/component/typography";
 import { useAppSelector } from "@/redux/store/hook";
 import { encryptData } from "@/utils/crypto";
+import { useEffect, useRef } from "react";
 
 const VideoGalleryPreview = () => {
   const images = useAppSelector(
@@ -11,11 +12,47 @@ const VideoGalleryPreview = () => {
     (s) => s?.card?.card_data?.["personal_details"]?.card_theme
   );
 
+  const videoRefs = useRef<HTMLVideoElement[]>([]); // Store all video refs
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target as HTMLVideoElement;
+          if (entry.isIntersecting) {
+            video.play();
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.5 } // Play when 50% of the video is visible
+    );
+
+    videoRefs.current.forEach((video) => {
+      if (video) observer.observe(video);
+    });
+
+    return () => {
+      videoRefs.current.forEach((video) => {
+        if (video) observer.unobserve(video);
+      });
+    };
+  }, []);
+
+  const handlePlay = (index: number) => {
+    videoRefs.current.forEach((video, i) => {
+      if (video && i !== index) {
+        video.pause(); // Pause all other videos when one plays
+      }
+    });
+  };
+
   return (
     <Container
       key={encryptData(`${new Date().toISOString()}-video`)}
       className="scrollbar"
-      id={"videos"}
+      id="videos"
       sx={{
         border: `2px solid ${theme?.accent_color}`,
         borderRadius: "24px",
@@ -28,12 +65,12 @@ const VideoGalleryPreview = () => {
           backgroundColor: theme?.accent_color,
         }}
       >
-        <CustomTypography variant={"h5"} color={"white"} fontWeight={"medium"}>
+        <CustomTypography variant="h5" color="white" fontWeight="medium">
           Video Gallery
         </CustomTypography>
       </div>
 
-      {images?.map((img) => (
+      {images?.map((img, index) => (
         <div
           key={img.title}
           style={{
@@ -45,14 +82,19 @@ const VideoGalleryPreview = () => {
         >
           <ImageContainer>
             <video
+              ref={(el) => {
+                if (el) videoRefs.current[index] = el;
+              }}
               src={
                 typeof img.url === "string"
                   ? img.url
                   : URL.createObjectURL(img.url)
               }
-              autoPlay={true}
-              controls={true}
+              autoPlay={false}
+              muted={false}
+              controls
               controlsList="nodownload"
+              onPlay={() => handlePlay(index)}
             />
           </ImageContainer>
         </div>
