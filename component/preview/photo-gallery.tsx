@@ -120,8 +120,7 @@ const PhotoGalleryPreview = () => {
               loading="lazy"
               style={{
                 width: "100%",
-                height: "250px",
-                // aspectRatio: "1/1",
+                aspectRatio: "1/1",
                 display: "block",
                 objectFit: "cover",
               }}
