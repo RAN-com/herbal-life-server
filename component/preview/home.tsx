@@ -53,13 +53,17 @@ const HomePreview = () => {
     onSubmit: async (values) => {
       setLoading(true);
       console.log(values);
-      const create = await createAppointment(staff?.data?.sid as string, {
-        ...values,
-        appointment_date: values.date,
-        assigned_to: {
-          sid: staff?.data?.sid as string,
-        },
-      });
+      const create = await createAppointment(
+        staff?.data?.sid as string,
+        staff?.data?.createdBy as string,
+        {
+          ...values,
+          appointment_date: values.date,
+          assigned_to: {
+            sid: staff?.data?.sid as string,
+          },
+        }
+      );
 
       setShowForm(false);
       setLoading(false);

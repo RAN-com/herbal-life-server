@@ -4,6 +4,18 @@ import { useAppSelector } from "@/redux/store/hook";
 import { encryptData } from "@/utils/crypto";
 import { useEffect, useRef } from "react";
 
+/**
+ * VideoGalleryPreview component renders a gallery of videos that play when they come into view.
+ *
+ * This component uses the `useAppSelector` hook to retrieve video gallery data and theme information from the Redux store.
+ * It also uses the `useRef` hook to store references to all video elements and the `useEffect` hook to set up an IntersectionObserver
+ * that plays or pauses videos based on their visibility in the viewport.
+ *
+ * The `handlePlay` function ensures that only one video plays at a time by pausing all other videos when one starts playing.
+ *
+ * @returns {JSX.Element} The rendered video gallery component.
+ */
+
 const VideoGalleryPreview = () => {
   const images = useAppSelector(
     (s) => s?.card?.card_data?.["video_gallery"] ?? []

@@ -5,6 +5,7 @@ import { AppointmentData, StaffData } from "@/types/staff";
 import { errorToast } from "@/utils/toast";
 import { encryptData } from "@/utils/crypto";
 import moment from "moment";
+import { sendNotification } from "./notification";
 
 export const checkSubdomain = async (uid: string, domain: string) => {
   const appRef = doc(firestore, `users/${uid}/appointments/${domain}`);
@@ -72,6 +73,7 @@ export const setSubDomainToStaff = async (
 
 export const createAppointment = async (
   sid: string,
+  uid: string,
   data: Omit<AppointmentData, "aid" | "createdOn">
 ) => {
   try {
@@ -106,6 +108,14 @@ export const createAppointment = async (
         total_records: 1,
       });
     }
+
+    await sendNotification(uid, {
+      title: `Appointment Submitted By: ${data.name}`,
+      message: `An appointment has been successfully submitted for ${
+        data.name
+      } on ${moment(data.appointment_date).format("MMMM Do YYYY, h:mm a")}.`,
+      type: "update",
+    });
 
     return {
       success: true,
