@@ -14,6 +14,7 @@ export type CreateCardPaymentProps = {
   valid_till?: string;
   oid?: string;
   payment_details?: PaymentDetails;
+  canApproveWithoutPayment?: boolean;
 };
 
 export type CreateAdminPayment = {
@@ -26,4 +27,5 @@ export type CreateAdminPayment = {
   type: "SUBSCRIPTION";
   status?: "paid" | "pending" | "failed" | null;
   payment_details?: PaymentDetails;
+  canApproveWithoutPayment?: boolean;
 };

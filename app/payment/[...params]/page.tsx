@@ -45,7 +45,6 @@ export default function PaymentPage() {
 
   React.useEffect(() => {
     if (!!data && !loading) {
-      console.log("Can ProceED nOW");
       dispatch(setShowRazorpay(true));
       router.push("/pay", { scroll: true });
     } else {

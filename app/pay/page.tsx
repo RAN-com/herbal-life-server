@@ -80,6 +80,36 @@ export default function Pay() {
   }, [dispatch, order]);
 
   const handlePayment = () => {
+    if (order?.canApproveWithoutPayment) {
+      try {
+        dispatch(
+          markAs({
+            status: "paid",
+            uid: order?.uid as string,
+            sid: order?.sid as string,
+          })
+        );
+        successToast("Payment Successful");
+        debounce(() => {
+          window.location.href = "/";
+        }, 1000)();
+        return;
+      } catch (err) {
+        dispatch(
+          markAs({
+            status: "failure",
+            uid: order?.uid as string,
+            sid: order?.sid as string,
+          })
+        );
+        errorToast("Payment Failed");
+        debounce(() => {
+          window.location.href = "/";
+        }, 1000)();
+        console.log(err);
+      }
+      return;
+    }
     if (!razorpay_key) {
       throw new Error("Razorpay environment variables are not set");
     }
