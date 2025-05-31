@@ -3,35 +3,11 @@ import { Button, styled } from "@mui/material";
 import Image from "next/image";
 import NotFoundPNG from "@/assets/not-found.png";
 import CustomTypography from "../component/typography";
-
-function removeSubdomainsAndRedirect() {
-  const { hostname, protocol, pathname, search, port } = window.location;
-  // Split the hostname to check for subdomains
-  const hostParts = hostname.split(".");
-
-  // Check if hostname is localhost or an IP address
-  const isLocalhost =
-    hostname.includes("localhost") || /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
-
-  if (!isLocalhost && hostParts.length > 2) {
-    // For non-localhost, keep only the last two parts (e.g., "example.com")
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, ...others] = hostname.split(".");
-
-    const redirectUrl = `${protocol}//${others}${pathname}${search}`;
-    window.location.replace(redirectUrl);
-  } else if (isLocalhost && hostParts.length > 1) {
-    // For localhost or IP, keep only the "localhost" or IP part and include the port
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, ...others] = hostname.split(".");
-    const redirectUrl = `${protocol}//${others.join(".")}${
-      port ? `:${port}` : ""
-    }${pathname}${search}`;
-    window.location.replace(redirectUrl);
-  }
-}
+import { useRouter } from "next/router";
 
 export default function NotFound() {
+  const router = useRouter();
+
   return (
     <Container>
       <Image
@@ -81,7 +57,8 @@ export default function NotFound() {
             padding: "8px 24px",
           }}
           onClick={() => {
-            removeSubdomainsAndRedirect();
+            const domain = window.location.hostname;
+            router.replace("https://" + domain);
           }}
         >
           Return to Homepage
