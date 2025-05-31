@@ -17,7 +17,7 @@ export default function HomePage() {
   console.log(razorpay_key, razorpay_secret);
   // Function to extract the first subdomain from the hostname
   const getFirstSubdomain = (hostname: string): string | null => {
-    if (!hostname.includes("nutrition")) return null;
+    if (!hostname.includes("vcard")) return null;
     // If the hostname is "localhost" or an IP address, return null
     // if (
     //   hostname === "localhost" ||
@@ -28,7 +28,7 @@ export default function HomePage() {
     // }
 
     // Split the hostname into parts based on the dots
-    const parts = hostname.split(".nutrition");
+    const parts = hostname.split(".vcard");
 
     console.log(parts);
     // If there are more than two parts, it indicates a subdomain
@@ -36,7 +36,7 @@ export default function HomePage() {
     if (parts.length > 1) {
       return parts[0]; // The first part is the subdomain
     }
-    if (parts.length === 1 && parts.join("").includes("nutrition")) {
+    if (parts.length === 1 && parts.join("").includes("vcard")) {
       return "main";
     }
 

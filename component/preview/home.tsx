@@ -34,7 +34,7 @@ const validationSchema = Yup.object().shape({
   date: Yup.date().required("Date is required"),
 });
 const MSG_TEMPLATE =
-  "Hi, I’m interested in learning more about your nutrition services!";
+  "Hi, I’m interested in learning more about your vcard services!";
 const HomePreview = () => {
   const domain = useAppSelector((s) => s.card.staff_domain);
   const data = useAppSelector((s) => s.card.card_data);
