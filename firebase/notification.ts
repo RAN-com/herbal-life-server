@@ -3,10 +3,17 @@ import { firestore } from "./";
 import moment from "moment";
 import { CreateNotification, Notification } from "@/types/notification";
 import { encryptData } from "../utils/crypto";
+import { AppointmentData } from "@/types/staff";
 
 export const sendNotification = async (
   uid: string,
-  data?: CreateNotification
+  data?: CreateNotification & {
+    metadata?: {
+      appointment: AppointmentData;
+      staffId: string;
+      userId: string;
+    };
+  }
 ) => {
   const nDoc = doc(firestore, `notifications/${uid}`);
   try {
