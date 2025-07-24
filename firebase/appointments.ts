@@ -93,6 +93,7 @@ export const createAppointment = async (
 
     const newAppointment: AppointmentData = {
       ...data,
+      mapLocation: data?.mapLocation || "",
       aid: encryptData(data.phone + new Date().toString()) as string, // Generate unique ID based on phone
       createdOn: moment().toISOString(), // Current timestamp for creation
     };
@@ -111,6 +112,11 @@ export const createAppointment = async (
 
     await sendNotification(uid, {
       title: `Appointment Submitted By: ${data.name}`,
+      metadata: {
+        appointment: newAppointment,
+        staffId: sid,
+        userId: uid,
+      },
       message: `An appointment has been successfully submitted for ${
         data.name
       } on ${moment(data.appointment_date).format("MMMM Do YYYY, h:mm a")}.`,

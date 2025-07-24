@@ -58,6 +58,7 @@ const HomePreview = () => {
         staff?.data?.createdBy as string,
         {
           ...values,
+          mapLocation: data?.personal_details?.map_embed || "",
           appointment_date: values.date,
           assigned_to: {
             sid: staff?.data?.sid as string,
