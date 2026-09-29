@@ -3,13 +3,13 @@ import { getAuth } from "firebase/auth";
 import { doc, getFirestore, getDoc } from "firebase/firestore";
 import { CenterUser } from "@/types/user";
 const firebaseConfig = {
-  apiKey: "AIzaSyCaElCmygA7RKHdn9xyx5bezzso_1xsVA8",
-  authDomain: "ran-dev-6f346.firebaseapp.com",
-  projectId: "ran-dev-6f346",
-  storageBucket: "ran-dev-6f346.firebasestorage.app",
-  messagingSenderId: "161059016152",
-  appId: "1:161059016152:web:de8f684ab5cf8a28a936ad",
-  measurementId: "G-TGH27VE51H",
+  apiKey: "AIzaSyBb7HihkPwkG8vNgZh5oSsFAzev1ICnA2M",
+  authDomain: "nutrition-7b61a.firebaseapp.com",
+  projectId: "nutrition-7b61a",
+  storageBucket: "nutrition-7b61a.firebasestorage.app",
+  messagingSenderId: "913564196178",
+  appId: "1:913564196178:web:a35adb9f64a0adf88eae8b",
+  measurementId: "G-R19DG2ECGQ",
 };
 
 // Initialize Firebase
