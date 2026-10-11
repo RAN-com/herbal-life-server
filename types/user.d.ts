@@ -7,9 +7,10 @@ export type CenterUser = {
 
   center_address: string
   photo_url?: string
-  createdOn: string
+  phone?: string
+  createdOn?: string
   subscription: {
-    type: 'FREE_TRAIL' | 'PAID'
+    type: 'FREE_TRAIL' | 'SUBSCRIPTION' | 'PAID'
     subscribedOn: string
     valid_till: string
     total_customers: number

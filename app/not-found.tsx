@@ -3,7 +3,7 @@ import { Button, styled } from "@mui/material";
 import Image from "next/image";
 import NotFoundPNG from "@/assets/not-found.png";
 import CustomTypography from "../component/typography";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function NotFound() {
   const router = useRouter();
@@ -38,6 +38,7 @@ export default function NotFound() {
       </div>
       <Button
         variant="contained"
+        onClick={() => router.replace("/")}
         sx={{
           ".MuiButton-root": {
             marginTop: "12px",
@@ -55,10 +56,6 @@ export default function NotFound() {
           sx={{
             // fontWeight: "bold",
             padding: "8px 24px",
-          }}
-          onClick={() => {
-            const domain = window.location.hostname;
-            router.replace("https://" + domain);
           }}
         >
           Return to Homepage
