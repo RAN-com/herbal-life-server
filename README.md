@@ -30,14 +30,25 @@ charge or refund.
 
    # Option B: the full service-account JSON, on one line
    FIREBASE_SERVICE_ACCOUNT_JSON='{"type":"service_account",...}'
+
+   # Option C: the service-account JSON encoded as one base64 string
+   FIREBASE_SERVICE_ACCOUNT_BASE64=<base64-encoded-service-account-json>
    ```
 
    Option A points to the existing root-level key file. The service-account
    JSON is a private IAM key, not the public Firebase web config or a Firebase
    user's password. Never add the JSON contents to
-   `NEXT_PUBLIC_*` variables or commit the key.
+   `NEXT_PUBLIC_*` variables or commit the key. For Option C, base64-encode the
+   JSON file locally and put the result in `.env.local` or your hosting
+   provider's secret manager. Base64 is only an encoding, not encryption; keep
+   the value secret. The app decodes it in memory and does not write a
+   credentials file during installation.
 
-   In production, configure `FIREBASE_SERVICE_ACCOUNT_JSON` using your hosting
+   Set only one of `FIREBASE_SERVICE_ACCOUNT_JSON` and
+   `FIREBASE_SERVICE_ACCOUNT_BASE64`. Either variable takes precedence over
+   `GOOGLE_APPLICATION_CREDENTIALS` when configured.
+
+   In production, configure the JSON or base64 variable using your hosting
    provider's encrypted environment variables or secret manager. Alternatively,
    use the provider's workload identity/Application Default Credentials, or
    securely mount the key file and set `GOOGLE_APPLICATION_CREDENTIALS` to its

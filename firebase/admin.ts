@@ -10,16 +10,44 @@ import { DecodedIdToken, getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 
 function getAdminCredential() {
+  const serviceAccountBase64 =
+    process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
   const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-  if (!serviceAccountJson) {
+  if (serviceAccountBase64 && serviceAccountJson) {
+    throw new Error(
+      "Set only one of FIREBASE_SERVICE_ACCOUNT_BASE64 or FIREBASE_SERVICE_ACCOUNT_JSON."
+    );
+  }
+
+  if (!serviceAccountBase64 && !serviceAccountJson) {
     return applicationDefault();
+  }
+
+  let serviceAccountContents = serviceAccountJson;
+  if (serviceAccountBase64) {
+    const normalizedBase64 = serviceAccountBase64.replace(/\s/g, "");
+    const decoded = Buffer.from(normalizedBase64, "base64");
+    if (
+      !normalizedBase64 ||
+      decoded.toString("base64").replace(/=+$/, "") !==
+        normalizedBase64.replace(/=+$/, "")
+    ) {
+      throw new Error(
+        "FIREBASE_SERVICE_ACCOUNT_BASE64 must contain valid base64-encoded JSON."
+      );
+    }
+    serviceAccountContents = decoded.toString("utf8");
   }
 
   let serviceAccount: unknown;
   try {
-    serviceAccount = JSON.parse(serviceAccountJson);
+    serviceAccount = JSON.parse(serviceAccountContents!);
   } catch {
-    throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON must contain valid JSON.");
+    throw new Error(
+      serviceAccountBase64
+        ? "FIREBASE_SERVICE_ACCOUNT_BASE64 must decode to valid JSON."
+        : "FIREBASE_SERVICE_ACCOUNT_JSON must contain valid JSON."
+    );
   }
 
   if (
@@ -33,7 +61,7 @@ function getAdminCredential() {
     typeof serviceAccount.private_key !== "string"
   ) {
     throw new Error(
-      "FIREBASE_SERVICE_ACCOUNT_JSON is missing project_id, client_email, or private_key."
+      `${serviceAccountBase64 ? "FIREBASE_SERVICE_ACCOUNT_BASE64" : "FIREBASE_SERVICE_ACCOUNT_JSON"} is missing project_id, client_email, or private_key.`
     );
   }
 
