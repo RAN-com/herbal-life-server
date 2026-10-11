@@ -101,6 +101,7 @@ export async function GET(request: Request) {
         city: readString(data.city),
         locality: readString(data.locality),
         createdOn: readString(data.createdOn),
+        is_active: data.is_active !== false,
         subscription: subscriptionData
           ? {
               type: readString(subscriptionData.type),
@@ -189,6 +190,35 @@ export async function PATCH(request: Request) {
       typeof reason === "string" ? reason.trim() : "";
     const userRef = adminFirestore.collection("users").doc(uid);
     const transactionRef = userRef.collection("transactions").doc();
+
+    if (action === "deactivate" || action === "activate") {
+      const result = await adminFirestore.runTransaction(async (tx) => {
+        const userSnapshot = await tx.get(userRef);
+        if (!userSnapshot.exists) {
+          throw new AdminRequestError("Customer not found.", 404);
+        }
+        const createdOn = new Date().toISOString();
+        const active = action === "activate";
+        tx.update(userRef, {
+          is_active: active,
+          deactivatedOn: active ? null : createdOn,
+          deactivatedBy: active ? null : actor.uid,
+        });
+        tx.create(transactionRef, {
+          transactionId: transactionRef.id,
+          type: active ? "ADMIN_USER_ACTIVATED" : "ADMIN_USER_DEACTIVATED",
+          status: "completed",
+          createdOn,
+          createdBy: { uid: actor.uid, email: actor.email ?? null },
+          reason: trimmedReason || null,
+        });
+        return { active, changedOn: createdOn };
+      });
+      return NextResponse.json({
+        message: result.active ? "User activated." : "User deactivated.",
+        ...result,
+      });
+    }
 
     if (action === "grant") {
       const validTill = data.valid_till;
@@ -318,7 +348,7 @@ export async function PATCH(request: Request) {
     }
 
     return NextResponse.json(
-      { error: "Action must be either grant or cancel." },
+      { error: "Action must be grant, cancel, deactivate, or activate." },
       { status: 400 }
     );
   } catch (error) {

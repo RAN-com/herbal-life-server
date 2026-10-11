@@ -17,9 +17,12 @@ import {
   CreditCard,
   Grid2X2,
   LogOut,
+  Package,
   RefreshCw,
   Search,
   Shield,
+  UserRound,
+  UserRoundPlus,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -58,6 +61,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import ResourceManager from "@/component/admin/resource-manager";
 import {
   Sidebar,
   SidebarContent,
@@ -90,6 +94,7 @@ type AdminCustomer = {
   city: string | null;
   locality: string | null;
   createdOn: string | null;
+  is_active?: boolean;
   subscription: {
     type: string | null;
     subscribedOn: string | null;
@@ -114,13 +119,34 @@ type CustomerPage = {
 };
 
 type AccessState = "checking" | "signedOut" | "ready" | "denied" | "error";
-type Section = "overview" | "customers" | "subscriptions";
+type Section =
+  | "overview"
+  | "customers"
+  | "subscriptions"
+  | "customers-data"
+  | "visitors"
+  | "staff"
+  | "products"
+  | "domains"
+  | "cards"
+  | "appointments"
+  | "notifications"
+  | "orders";
 
 const PAGE_SIZE = 25;
 const navigation = [
   { id: "overview", label: "Overview", icon: Grid2X2 },
   { id: "customers", label: "Customers", icon: Users },
   { id: "subscriptions", label: "Subscriptions", icon: CreditCard },
+  { id: "customers-data", label: "Customer records", icon: UserRound },
+  { id: "visitors", label: "Visitors", icon: UserRoundPlus },
+  { id: "staff", label: "Staff", icon: Users },
+  { id: "products", label: "Products", icon: Package },
+  { id: "domains", label: "Domains", icon: Shield },
+  { id: "cards", label: "Cards", icon: CreditCard },
+  { id: "appointments", label: "Appointments", icon: Activity },
+  { id: "notifications", label: "Notifications", icon: Activity },
+  { id: "orders", label: "Orders", icon: CreditCard },
 ] as const;
 
 type SubscriptionForm = {
@@ -835,7 +861,9 @@ export default function Dashboard() {
       ? "Overview"
       : section === "customers"
         ? "Customers"
-        : "Subscriptions";
+        : section === "subscriptions"
+          ? "Subscriptions"
+          : navigation.find((item) => item.id === section)?.label ?? "Records";
   const page = cursorHistory.length;
 
   return (
@@ -942,7 +970,9 @@ export default function Dashboard() {
                 ? "Here’s an overview of your customers and plans."
                 : section === "customers"
                   ? "Browse customer accounts and their current plan details."
-                  : "Review the subscription plans currently recorded for customers."}
+                  : section === "subscriptions"
+                    ? "Review the subscription plans currently recorded for customers."
+                    : "Safely manage verified records for the selected center user."}
             </p>
           </div>
 
@@ -1004,6 +1034,24 @@ export default function Dashboard() {
             </section>
           )}
 
+          {section !== "overview" &&
+            section !== "customers" &&
+            section !== "subscriptions" &&
+            adminUser && (
+            <ResourceManager
+              users={customers}
+              resource={
+                section === "customers-data"
+                  ? "customers"
+                  : section
+              }
+              onUserStatusChange={refreshPage}
+            />
+          )}
+
+          {(section === "overview" ||
+            section === "customers" ||
+            section === "subscriptions") && (
           <Card className="min-w-0">
             <CardHeader className="gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="space-y-1">
@@ -1107,6 +1155,7 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
+          )}
         </main>
       </SidebarInset>
 
