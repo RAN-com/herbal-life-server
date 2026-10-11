@@ -142,6 +142,22 @@ class DashboardRequestError extends Error {
   }
 }
 
+async function readApiResponse<T>(
+  response: Response,
+  fallbackMessage: string
+): Promise<T> {
+  const body = await response.text();
+
+  try {
+    return JSON.parse(body) as T;
+  } catch {
+    const message = response.ok
+      ? `The server returned an invalid response (HTTP ${response.status}).`
+      : `${fallbackMessage} The server returned a non-JSON response (HTTP ${response.status}); check the Vercel function logs.`;
+    throw new DashboardRequestError(message, response.status);
+  }
+}
+
 function isSubscriptionActive(
   subscription: AdminCustomer["subscription"]
 ): boolean {
@@ -182,7 +198,9 @@ async function requestCustomerPage(
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store",
   });
-  const result = (await response.json()) as CustomerPage & { error?: string };
+  const result = await readApiResponse<
+    CustomerPage & { error?: string }
+  >(response, "Unable to load customer data.");
 
   if (!response.ok) {
     throw new DashboardRequestError(
@@ -207,7 +225,10 @@ async function updateSubscription(
     body: JSON.stringify(payload),
     cache: "no-store",
   });
-  const result = (await response.json()) as { error?: string; message?: string };
+  const result = await readApiResponse<{
+    error?: string;
+    message?: string;
+  }>(response, "Unable to update subscription.");
   if (!response.ok) {
     throw new Error(result.error ?? "Unable to update subscription.");
   }
