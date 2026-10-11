@@ -32,7 +32,7 @@ yarn-error.log*
 
 .env.*
 .env
-/nutrition-7b61a-73ffdd36770d.json
+/nutrition-7b61a*.json
 
 # vercel
 .vercel
