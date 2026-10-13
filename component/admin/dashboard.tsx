@@ -161,7 +161,7 @@ type SubscriptionForm = {
 class DashboardRequestError extends Error {
   constructor(
     message: string,
-    public readonly status: number
+    public readonly status: number,
   ) {
     super(message);
     this.name = "DashboardRequestError";
@@ -170,7 +170,7 @@ class DashboardRequestError extends Error {
 
 async function readApiResponse<T>(
   response: Response,
-  fallbackMessage: string
+  fallbackMessage: string,
 ): Promise<T> {
   const body = await response.text();
 
@@ -185,7 +185,7 @@ async function readApiResponse<T>(
 }
 
 function isSubscriptionActive(
-  subscription: AdminCustomer["subscription"]
+  subscription: AdminCustomer["subscription"],
 ): boolean {
   if (!subscription?.valid_till) return false;
   const expiry = Date.parse(subscription.valid_till);
@@ -198,16 +198,15 @@ function localDateTimeValue(date: Date): string {
 }
 
 function subscriptionFormFor(
-  subscription: AdminCustomer["subscription"]
+  subscription: AdminCustomer["subscription"],
 ): SubscriptionForm {
   return {
     validTill:
-      subscription?.valid_till && Number.isFinite(Date.parse(subscription.valid_till))
+      subscription?.valid_till &&
+      Number.isFinite(Date.parse(subscription.valid_till))
         ? localDateTimeValue(new Date(subscription.valid_till))
         : "",
-    total_customers: subscription
-      ? String(subscription.total_customers)
-      : "",
+    total_customers: subscription ? String(subscription.total_customers) : "",
     total_staffs: subscription ? String(subscription.total_staffs) : "",
     total_visitors: subscription ? String(subscription.total_visitors) : "",
     total_products: subscription ? String(subscription.total_products) : "",
@@ -217,21 +216,22 @@ function subscriptionFormFor(
 
 async function requestCustomerPage(
   cursor: string | null,
-  token: string
+  token: string,
 ): Promise<CustomerPage> {
   const search = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
   const response = await fetch(`/api/admin/users${search}`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store",
   });
-  const result = await readApiResponse<
-    CustomerPage & { error?: string }
-  >(response, "Unable to load customer data.");
+  const result = await readApiResponse<CustomerPage & { error?: string }>(
+    response,
+    "Unable to load customer data.",
+  );
 
   if (!response.ok) {
     throw new DashboardRequestError(
       result.error ?? "Unable to load customer data.",
-      response.status
+      response.status,
     );
   }
 
@@ -240,7 +240,7 @@ async function requestCustomerPage(
 
 async function updateSubscription(
   token: string,
-  payload: Record<string, unknown>
+  payload: Record<string, unknown>,
 ) {
   const response = await fetch("/api/admin/users", {
     method: "PATCH",
@@ -269,7 +269,11 @@ function planLabel(type: string | null | undefined) {
 
 function PlanBadge({ type }: { type: string | null | undefined }) {
   const variant =
-    type === "PAID" ? "default" : type === "FREE_TRAIL" ? "secondary" : "outline";
+    type === "PAID"
+      ? "default"
+      : type === "FREE_TRAIL"
+        ? "secondary"
+        : "outline";
   return <Badge variant={variant}>{planLabel(type)}</Badge>;
 }
 
@@ -283,7 +287,9 @@ function SubscriptionStatusBadge({
   }
 
   return (
-    <Badge variant={isSubscriptionActive(subscription) ? "default" : "secondary"}>
+    <Badge
+      variant={isSubscriptionActive(subscription) ? "default" : "secondary"}
+    >
       {isSubscriptionActive(subscription) ? "Active" : "Expired"}
     </Badge>
   );
@@ -535,7 +541,7 @@ export default function Dashboard() {
   const [selectedCustomer, setSelectedCustomer] =
     useState<AdminCustomer | null>(null);
   const [subscriptionForm, setSubscriptionForm] = useState<SubscriptionForm>(
-    () => subscriptionFormFor(null)
+    () => subscriptionFormFor(null),
   );
   const [subscriptionSaving, setSubscriptionSaving] = useState(false);
   const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
@@ -559,7 +565,7 @@ export default function Dashboard() {
       setAccess(
         caught instanceof DashboardRequestError && caught.status === 403
           ? "denied"
-          : "error"
+          : "error",
       );
       return false;
     } finally {
@@ -607,16 +613,19 @@ export default function Dashboard() {
         customer.uid,
       ]
         .filter((value): value is string => Boolean(value))
-        .some((value) => value.toLowerCase().includes(query))
+        .some((value) => value.toLowerCase().includes(query)),
     );
   }, [customers, search, section]);
 
-  async function changePage(cursor: string | null, direction: "next" | "previous") {
+  async function changePage(
+    cursor: string | null,
+    direction: "next" | "previous",
+  ) {
     if (!adminUser) return;
     try {
       if (await loadPage(cursor, await adminUser.getIdToken())) {
         setCursorHistory((history) =>
-          direction === "next" ? [...history, cursor] : history.slice(0, -1)
+          direction === "next" ? [...history, cursor] : history.slice(0, -1),
         );
         setSearch("");
       }
@@ -631,7 +640,7 @@ export default function Dashboard() {
     try {
       await loadPage(
         cursorHistory[cursorHistory.length - 1] ?? null,
-        await adminUser.getIdToken()
+        await adminUser.getIdToken(),
       );
     } catch {
       setError("Unable to refresh your session. Please sign in again.");
@@ -656,7 +665,7 @@ export default function Dashboard() {
           ? "The email or password is incorrect."
           : caught instanceof Error
             ? caught.message
-            : "Unable to sign in. Please try again."
+            : "Unable to sign in. Please try again.",
       );
     } finally {
       setLoginLoading(false);
@@ -690,10 +699,12 @@ export default function Dashboard() {
     };
     if (
       Object.values(quotas).some(
-        (value) => !Number.isSafeInteger(value) || value < 0
+        (value) => !Number.isSafeInteger(value) || value < 0,
       )
     ) {
-      setSubscriptionError("Enter a non-negative whole number for every quota.");
+      setSubscriptionError(
+        "Enter a non-negative whole number for every quota.",
+      );
       setSubscriptionSaving(false);
       return;
     }
@@ -714,7 +725,7 @@ export default function Dashboard() {
       setSubscriptionError(
         caught instanceof Error
           ? caught.message
-          : "Unable to update the subscription."
+          : "Unable to update the subscription.",
       );
     } finally {
       setSubscriptionSaving(false);
@@ -740,7 +751,7 @@ export default function Dashboard() {
       setSubscriptionError(
         caught instanceof Error
           ? caught.message
-          : "Unable to cancel the subscription."
+          : "Unable to cancel the subscription.",
       );
     } finally {
       setSubscriptionSaving(false);
@@ -766,8 +777,8 @@ export default function Dashboard() {
                 Sign in to your workspace
               </CardTitle>
               <CardDescription>
-                Use an administrator account to access customer and
-                subscription information.
+                Use an administrator account to access customer and subscription
+                information.
               </CardDescription>
             </div>
           </CardHeader>
@@ -804,11 +815,7 @@ export default function Dashboard() {
                   <AlertDescription>{loginError}</AlertDescription>
                 </Alert>
               )}
-              <Button
-                type="submit"
-                disabled={loginLoading}
-                className="w-full"
-              >
+              <Button type="submit" disabled={loginLoading} className="w-full">
                 {loginLoading ? "Signing in…" : "Sign in"}
               </Button>
             </form>
@@ -863,7 +870,8 @@ export default function Dashboard() {
         ? "Customers"
         : section === "subscriptions"
           ? "Subscriptions"
-          : navigation.find((item) => item.id === section)?.label ?? "Records";
+          : (navigation.find((item) => item.id === section)?.label ??
+            "Records");
   const page = cursorHistory.length;
 
   return (
@@ -877,7 +885,7 @@ export default function Dashboard() {
               </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">Herbal Life</span>
+              <span className="truncate font-semibold">RAN INFOTECH</span>
               <span className="truncate text-xs text-muted-foreground">
                 Admin workspace
               </span>
@@ -1038,123 +1046,121 @@ export default function Dashboard() {
             section !== "customers" &&
             section !== "subscriptions" &&
             adminUser && (
-            <ResourceManager
-              users={customers}
-              resource={
-                section === "customers-data"
-                  ? "customers"
-                  : section
-              }
-              onUserStatusChange={refreshPage}
-            />
-          )}
+              <ResourceManager
+                users={customers}
+                resource={section === "customers-data" ? "customers" : section}
+                onUserStatusChange={refreshPage}
+              />
+            )}
 
           {(section === "overview" ||
             section === "customers" ||
             section === "subscriptions") && (
-          <Card className="min-w-0">
-            <CardHeader className="gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="space-y-1">
-                <CardTitle>
-                  {section === "overview"
-                    ? "Customer snapshot"
-                    : section === "subscriptions"
-                      ? "Subscription accounts"
-                      : "Customer directory"}
-                </CardTitle>
-                <CardDescription>
-                  {section === "overview"
-                    ? "Customer and plan information from your account records."
-                    : `Page ${page} · ${PAGE_SIZE} records per page`}
-                </CardDescription>
-              </div>
-              <div className="flex min-w-0 items-center gap-2">
-                <div className="relative min-w-0 flex-1 sm:w-64 sm:flex-none">
-                  <Search
-                    className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                  <Input
-                    type="search"
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                    placeholder="Search this page"
-                    aria-label="Search customers on this page"
-                    className="pl-9"
-                  />
+            <Card className="min-w-0">
+              <CardHeader className="gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-1">
+                  <CardTitle>
+                    {section === "overview"
+                      ? "Customer snapshot"
+                      : section === "subscriptions"
+                        ? "Subscription accounts"
+                        : "Customer directory"}
+                  </CardTitle>
+                  <CardDescription>
+                    {section === "overview"
+                      ? "Customer and plan information from your account records."
+                      : `Page ${page} · ${PAGE_SIZE} records per page`}
+                  </CardDescription>
                 </div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  aria-label="Refresh customer list"
-                  onClick={refreshPage}
-                  disabled={loading}
-                >
-                  <RefreshCw className={loading ? "animate-spin" : ""} />
-                </Button>
-              </div>
-            </CardHeader>
+                <div className="flex min-w-0 items-center gap-2">
+                  <div className="relative min-w-0 flex-1 sm:w-64 sm:flex-none">
+                    <Search
+                      className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                    <Input
+                      type="search"
+                      value={search}
+                      onChange={(event) => setSearch(event.target.value)}
+                      placeholder="Search this page"
+                      aria-label="Search customers on this page"
+                      className="pl-9"
+                    />
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    aria-label="Refresh customer list"
+                    onClick={refreshPage}
+                    disabled={loading}
+                  >
+                    <RefreshCw className={loading ? "animate-spin" : ""} />
+                  </Button>
+                </div>
+              </CardHeader>
 
-            {loading && customers.length === 0 ? (
-              <CardContent className="space-y-3">
-                {Array.from({ length: 5 }, (_, index) => (
-                  <Skeleton key={index} className="h-14 w-full" />
-                ))}
-              </CardContent>
-            ) : (
-              <CustomerRows
-                customers={
-                  section === "overview"
-                    ? visibleCustomers.slice(0, 8)
-                    : visibleCustomers
-                }
-                section={section}
-                onManage={openSubscriptionManager}
-                emptyMessage={
-                  search
-                    ? "Try another name, email, or customer ID on this page."
-                    : section === "subscriptions"
-                      ? "There are no subscriptions on this page."
-                      : "Customer records will appear here when available."
-                }
-              />
-            )}
-
-            <Separator />
-            <CardContent className="flex flex-col gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-xs text-muted-foreground">
-                Search applies to the current page of {PAGE_SIZE} records.
-              </p>
-              <div className="flex items-center justify-end gap-2">
-                <span className="mr-2 text-sm text-muted-foreground">
-                  Page {page}
-                </span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  aria-label="Previous page"
-                  onClick={() =>
-                    void changePage(
-                      cursorHistory[cursorHistory.length - 2] ?? null,
-                      "previous"
-                    )
+              {loading && customers.length === 0 ? (
+                <CardContent className="space-y-3">
+                  {Array.from({ length: 5 }, (_, index) => (
+                    <Skeleton key={index} className="h-14 w-full" />
+                  ))}
+                </CardContent>
+              ) : (
+                <CustomerRows
+                  customers={
+                    section === "overview"
+                      ? visibleCustomers.slice(0, 8)
+                      : visibleCustomers
                   }
-                  disabled={page === 1 || loading}
-                >
-                  <ChevronLeft />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  aria-label="Next page"
-                  onClick={() => nextCursor && void changePage(nextCursor, "next")}
-                  disabled={!nextCursor || loading}
-                >
-                  <ChevronRight />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                  section={section}
+                  onManage={openSubscriptionManager}
+                  emptyMessage={
+                    search
+                      ? "Try another name, email, or customer ID on this page."
+                      : section === "subscriptions"
+                        ? "There are no subscriptions on this page."
+                        : "Customer records will appear here when available."
+                  }
+                />
+              )}
+
+              <Separator />
+              <CardContent className="flex flex-col gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-xs text-muted-foreground">
+                  Search applies to the current page of {PAGE_SIZE} records.
+                </p>
+                <div className="flex items-center justify-end gap-2">
+                  <span className="mr-2 text-sm text-muted-foreground">
+                    Page {page}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    aria-label="Previous page"
+                    onClick={() =>
+                      void changePage(
+                        cursorHistory[cursorHistory.length - 2] ?? null,
+                        "previous",
+                      )
+                    }
+                    disabled={page === 1 || loading}
+                  >
+                    <ChevronLeft />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    aria-label="Next page"
+                    onClick={() =>
+                      nextCursor && void changePage(nextCursor, "next")
+                    }
+                    disabled={!nextCursor || loading}
+                  >
+                    <ChevronRight />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </main>
       </SidebarInset>
@@ -1232,7 +1238,9 @@ export default function Dashboard() {
                 </div>
               ))}
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="subscription-reason">Admin note (optional)</Label>
+                <Label htmlFor="subscription-reason">
+                  Admin note (optional)
+                </Label>
                 <Textarea
                   id="subscription-reason"
                   maxLength={500}
@@ -1303,8 +1311,8 @@ export default function Dashboard() {
             <AlertDialogTitle>Cancel this subscription?</AlertDialogTitle>
             <AlertDialogDescription>
               This immediately removes subscription access for{" "}
-              {selectedCustomer?.name || selectedCustomer?.email || "this user"}.
-              Their subscription record will be saved to the admin transaction
+              {selectedCustomer?.name || selectedCustomer?.email || "this user"}
+              . Their subscription record will be saved to the admin transaction
               history.
             </AlertDialogDescription>
           </AlertDialogHeader>

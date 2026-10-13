@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Archive, CheckCircle2, Edit3, RotateCcw } from "lucide-react";
+import { Archive, CheckCircle2, Edit3, KeyRound, Power, RotateCcw } from "lucide-react";
 import { auth } from "@/firebase";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -54,6 +54,8 @@ export default function ResourceManager({ users, resource, onUserStatusChange }:
   const [showArchived, setShowArchived] = useState(false);
   const [creating, setCreating] = useState(false);
   const [createValues, setCreateValues] = useState<Record<string, string>>({});
+  const [granting, setGranting] = useState<Row | null>(null);
+  const [grantExpiry, setGrantExpiry] = useState("");
 
   const selectedUser = users.find((user) => user.uid === uid);
   const fields = fieldMap[resource];
@@ -133,6 +135,7 @@ export default function ResourceManager({ users, resource, onUserStatusChange }:
       else if (["is_available", "is_active"].includes(field)) parsed[field] = value === "true";
       else parsed[field] = value;
     }
+
     try {
       const token = await auth.currentUser?.getIdToken();
       if (!token) throw new Error("Your session has expired. Please sign in again.");
@@ -145,6 +148,67 @@ export default function ResourceManager({ users, resource, onUserStatusChange }:
       setEditing(null); setMessage(body.message); await load();
     } catch (caught) { setError(caught instanceof Error ? caught.message : "Unable to update record."); }
     finally { setSaving(false); }
+  }
+
+  function openGrant(row: Row) {
+    const expiry = new Date();
+    expiry.setFullYear(expiry.getFullYear() + 1);
+    setGranting(row);
+    setGrantExpiry(expiry.toISOString().slice(0, 16));
+    setError("");
+  }
+
+  async function grantAccess() {
+    if (!granting || !grantExpiry) return;
+    setSaving(true); setError("");
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      if (!token) throw new Error("Your session has expired. Please sign in again.");
+      const response = await fetch("/api/admin/resources", {
+        method: "PATCH",
+        headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid,
+          resource,
+          id: granting.id,
+          action: "grant_access",
+          valid_till: new Date(grantExpiry).toISOString(),
+        }),
+      });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error ?? "Unable to grant card access.");
+      setGranting(null); setMessage(body.message); await load();
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Unable to grant card access.");
+    } finally { setSaving(false); }
+  }
+
+  async function toggleDomainAccess(row: Row) {
+    const active = row.data.domain_is_active !== false;
+    const nextActive = !active;
+    const domainName = String(row.data.domain_name ?? row.data.assigned_subdomain ?? "this domain");
+    if (!window.confirm(`${nextActive ? "Activate" : "Deactivate"} ${domainName}?`)) return;
+    setSaving(true); setError("");
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      if (!token) throw new Error("Your session has expired. Please sign in again.");
+      const response = await fetch("/api/admin/resources", {
+        method: "PATCH",
+        headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid,
+          resource,
+          id: row.id,
+          action: "set_domain_status",
+          active: nextActive,
+        }),
+      });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error ?? "Unable to change domain status.");
+      setMessage(body.message); await load();
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Unable to change domain status.");
+    } finally { setSaving(false); }
   }
 
   async function archiveRecord() {
@@ -203,10 +267,15 @@ export default function ResourceManager({ users, resource, onUserStatusChange }:
           <Button variant={showArchived ? "secondary" : "outline"} size="sm" onClick={() => setShowArchived((value) => !value)}>{showArchived ? "Hide archived" : "Show archived"}</Button>
         </div>
         <div className="overflow-x-auto rounded-md border">
-          <Table><TableHeader><TableRow><TableHead>Record ID</TableHead><TableHead>Summary</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+          <Table><TableHeader><TableRow><TableHead>Record ID</TableHead><TableHead>Summary</TableHead>{resource === "staff" && <TableHead>Assigned domain</TableHead>}<TableHead>Status</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
           <TableBody>
-            {!loading && !visibleRows.length && <TableRow><TableCell colSpan={4} className="py-10 text-center text-muted-foreground">No active records found.</TableCell></TableRow>}
-            {visibleRows.map((row) => { const archived = row.data.archived === true || row.data.is_active === false; return <TableRow key={row.id}><TableCell className="font-mono text-xs">{row.id}</TableCell><TableCell>{String(row.data.name ?? row.data.title ?? row.data.status ?? "Related record")}</TableCell><TableCell><Badge variant={archived ? "secondary" : "default"}>{archived ? "Archived" : "Active"}</Badge></TableCell><TableCell className="space-x-2 text-right">{!readOnly && !archived && <Button size="sm" variant="outline" onClick={() => openEdit(row)}><Edit3 />Edit</Button>} {!readOnly && <Button size="sm" variant="ghost" onClick={() => setConfirm({ row, restore: archived })}>{archived ? <RotateCcw /> : <Archive />}{archived ? "Restore" : "Archive"}</Button>}</TableCell></TableRow>; })}
+            {!loading && !visibleRows.length && <TableRow><TableCell colSpan={resource === "staff" ? 5 : 4} className="py-10 text-center text-muted-foreground">No active records found.</TableCell></TableRow>}
+            {visibleRows.map((row) => {
+              const archived = row.data.archived === true || row.data.is_active === false;
+              const hasDomain = resource === "staff" && typeof row.data.domain_id === "string";
+              const domainActive = row.data.domain_is_active !== false;
+              return <TableRow key={row.id}><TableCell className="font-mono text-xs">{row.id}</TableCell><TableCell>{String(row.data.name ?? row.data.title ?? row.data.status ?? "Related record")}</TableCell>{resource === "staff" && <TableCell className="font-mono text-xs">{hasDomain ? String(row.data.domain_name) : <span className="text-muted-foreground">Not assigned</span>}</TableCell>}<TableCell><Badge variant={archived ? "secondary" : "default"}>{archived ? "Archived" : "Active"}</Badge>{hasDomain && <Badge className="ml-2" variant={domainActive ? "default" : "secondary"}>{domainActive ? "Domain active" : "Domain inactive"}</Badge>}</TableCell><TableCell className="space-x-2 text-right">{hasDomain && <Button size="sm" variant={domainActive ? "destructive" : "default"} onClick={() => void toggleDomainAccess(row)}><Power />{domainActive ? "Deactivate domain" : "Activate domain"}</Button>} {resource === "domains" && !archived && <Button size="sm" variant="default" onClick={() => openGrant(row)}><KeyRound />Grant access</Button>} {!readOnly && !archived && <Button size="sm" variant="outline" onClick={() => openEdit(row)}><Edit3 />Edit</Button>} {!readOnly && <Button size="sm" variant="ghost" onClick={() => setConfirm({ row, restore: archived })}>{archived ? <RotateCcw /> : <Archive />}{archived ? "Restore" : "Archive"}</Button>}</TableCell></TableRow>;
+            })}
           </TableBody></Table>
         </div>
         {rows.some((row) => row.data.archived === true || row.data.is_active === false) && <p className="text-xs text-muted-foreground">Archived records are preserved and excluded from the active list.</p>}
@@ -215,6 +284,13 @@ export default function ResourceManager({ users, resource, onUserStatusChange }:
         <DialogContent><DialogHeader><DialogTitle>Edit {resourceLabels[resource]}</DialogTitle><DialogDescription>Only known safe fields are editable. Other Firestore fields remain unchanged.</DialogDescription></DialogHeader>
           <div className="grid gap-4 sm:grid-cols-2">{fields.map((field) => <div className="space-y-2" key={field}><Label htmlFor={`edit-${field}`}>{field}</Label><Input id={`edit-${field}`} value={values[field] ?? ""} onChange={(event) => setValues((current) => ({ ...current, [field]: event.target.value }))} /></div>)}</div>
           <DialogFooter><Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button><Button onClick={() => void updateRecord()} disabled={saving}>{saving ? "Saving…" : "Save changes"}</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={Boolean(granting)} onOpenChange={(open) => !open && setGranting(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Grant card access</DialogTitle><DialogDescription>Set how long this staff member can create and share their visiting card.</DialogDescription></DialogHeader>
+          <div className="space-y-2"><Label htmlFor="grant-expiry">Access through</Label><Input id="grant-expiry" type="datetime-local" min={new Date().toISOString().slice(0, 16)} value={grantExpiry} onChange={(event) => setGrantExpiry(event.target.value)} /></div>
+          <DialogFooter><Button variant="outline" onClick={() => setGranting(null)}>Cancel</Button><Button onClick={() => void grantAccess()} disabled={saving || !grantExpiry}>{saving ? "Granting…" : "Grant access"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
       <Dialog open={creating} onOpenChange={(open) => !open && setCreating(false)}>
