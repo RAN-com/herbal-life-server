@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -879,11 +880,13 @@ export default function Dashboard() {
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-3 px-2 py-2">
-            <Avatar className="size-9 rounded-lg">
-              <AvatarFallback className="rounded-lg bg-primary text-primary-foreground">
-                <Activity className="size-4" />
-              </AvatarFallback>
-            </Avatar>
+            <Image
+              src="/icon.png"
+              alt="RAN INFOTECH"
+              width={36}
+              height={36}
+              className="size-9 rounded-lg object-cover"
+            />
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">RAN INFOTECH</span>
               <span className="truncate text-xs text-muted-foreground">
